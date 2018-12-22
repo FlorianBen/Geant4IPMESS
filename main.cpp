@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
   //
 #ifdef G4MULTITHREADED
   G4MTRunManager* runManager = new G4MTRunManager;
-  runManager->SetNumberOfThreads(2);
+  runManager->SetNumberOfThreads(G4Threading::G4GetNumberOfCores());
 #else
   G4RunManager* runManager = new G4RunManager;
 #endif
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     // interactive mode : define UI session
     UImanager->ApplyCommand("/control/execute init_vis.mac"); 
     if (ui->IsGUI()) {
-       UImanager->ApplyCommand("/control/execute icons.mac");
+       //UImanager->ApplyCommand("/control/execute icons.mac");
     }
     ui->SessionStart();
     delete ui;
