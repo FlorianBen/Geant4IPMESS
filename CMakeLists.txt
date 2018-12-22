@@ -13,6 +13,9 @@ else()
 endif()
 include(${Geant4_USE_FILE})
 
+find_package(cadmesh)
+include_directories(${CADMESH_INCLUDE_DIRS})
+
 set(Geant4ESS_inc
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSEventAction.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSDetectorConstruction.hh
@@ -27,6 +30,7 @@ set(Geant4ESS_src
 
 add_executable(Geant4ESS main.cpp ${Geant4ESS_inc} ${Geant4ESS_src})
 target_link_libraries(Geant4ESS ${Geant4_LIBRARIES})
+target_link_libraries(Geant4ESS ${cadmesh_LIBRARIES})
 target_include_directories(Geant4ESS PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
