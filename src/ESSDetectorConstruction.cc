@@ -209,26 +209,26 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   rotIPM1->rotateY(-90. * deg);
 
   new G4PVPlacement(rotIPM1, G4ThreeVector(.0 * mm, 60.0 * mm, 206 * mm), IPML, "IPM1",
-                    worldLV, false, 0, checkOverlaps);
+                    pipeVacuumL, false, 0, checkOverlaps);
 
   rotIPM1 = new G4RotationMatrix();
   rotIPM1->rotateY(-90. * deg);
   rotIPM1->rotateZ(180. * deg);
   new G4PVPlacement(rotIPM1, G4ThreeVector(.0 * mm, -60.0 * mm, 206 * mm), IPML, "IPM2",
-                    worldLV, false, 1, checkOverlaps);
+                    pipeVacuumL, false, 1, checkOverlaps);
 
   // IPM2
   auto rotIPM2 = new G4RotationMatrix();
   rotIPM2->rotateY(-90. * deg);
 
   new G4PVPlacement(rotIPM2, G4ThreeVector(.0 * mm, 60.0 * mm, 372 * mm), IPML, "IPM1",
-                    worldLV, false, 0, checkOverlaps);
+                    pipeVacuumL, false, 0, checkOverlaps);
 
   rotIPM2 = new G4RotationMatrix();
   rotIPM2->rotateY(-90. * deg);
   rotIPM2->rotateZ(180. * deg);
   new G4PVPlacement(rotIPM2, G4ThreeVector(.0 * mm, -60.0 * mm, 372 * mm), IPML, "IPM2",
-                    worldLV, false, 1, checkOverlaps);
+                    pipeVacuumL, false, 1, checkOverlaps);
 
   // MCP
 
@@ -242,11 +242,11 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   rotCam1->rotateY(90. * deg);
   auto camL = new G4LogicalVolume(cad_solid, vacuumGas, "CameraL");
   new G4PVPlacement(rotCam1, G4ThreeVector(290. * mm, .0 * mm, 206 * mm), camL,
-                    "Cam1", worldLV, false, 0, checkOverlaps);
+                    "Cam1", pipeVacuumL, false, 0, checkOverlaps);
   auto rotCam2 = new G4RotationMatrix();
   rotCam2->rotateX(-90. * deg);
   new G4PVPlacement(rotCam2, G4ThreeVector(.0 * mm, 290. * mm, 372 * mm), camL,
-                    "Cam2", worldLV, false, 1, checkOverlaps);
+                    "Cam2", pipeVacuumL, false, 1, checkOverlaps);
 
   // WS
 
