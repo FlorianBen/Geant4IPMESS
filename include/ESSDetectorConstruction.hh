@@ -1,4 +1,3 @@
-//
 // ********************************************************************
 // * License and Disclaimer                                           *
 // *                                                                  *
@@ -43,12 +42,11 @@ class ESSDetectorConstruction : public G4VUserDetectorConstruction
     ESSDetectorConstruction();
     virtual ~ESSDetectorConstruction();
 
-  public:
     virtual G4VPhysicalVolume* Construct();
     virtual void ConstructSDandField();
+
+  protected:
+    virtual void ConstructMaterials();
 };
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 #endif
-

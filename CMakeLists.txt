@@ -16,6 +16,9 @@ include(${Geant4_USE_FILE})
 find_package(cadmesh)
 include_directories(${CADMESH_INCLUDE_DIRS})
 
+# Debug
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(Geant4ESS_inc
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSEventAction.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSDetectorConstruction.hh
@@ -36,7 +39,11 @@ target_include_directories(Geant4ESS PUBLIC
   $<INSTALL_INTERFACE:include>
   PRIVATE src)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/init_vis.mac ${CMAKE_CURRENT_BINARY_DIR})
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/icons.mac ${CMAKE_CURRENT_BINARY_DIR})
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/vis.mac ${CMAKE_CURRENT_BINARY_DIR})
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/run.mac ${CMAKE_CURRENT_BINARY_DIR})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/init_vis.mac ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/icons.mac ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/vis.mac ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/run.mac ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+
+add_custom_command(TARGET Geant4ESS POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  ${CMAKE_SOURCE_DIR}/data $<TARGET_FILE_DIR:Geant4ESS>)
