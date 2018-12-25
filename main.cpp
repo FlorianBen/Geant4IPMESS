@@ -10,15 +10,19 @@
 #include <G4PhysListFactory.hh>
 #include <G4UImanager.hh>
 
-#include "G4UIExecutive.hh"
-#include "G4VisExecutive.hh"
+#include <G4UIExecutive.hh>
+#include <G4VisExecutive.hh>
+
+#include <G4GDMLParser.hh>
+#include <G4LogicalVolume.hh>
+#include <G4TransportationManager.hh>
+
 
 #include "ESSActionInitialization.hh"
 #include "ESSDetectorConstruction.hh"
 
 int main(int argc, char *argv[]) {
   // Detect interactive mode (if no arguments) and define UI session
-  //
   G4UIExecutive *ui = 0;
   if (argc == 1) {
     ui = new G4UIExecutive(argc, argv);

@@ -36,17 +36,16 @@ class G4VPhysicalVolume;
 
 /// Detector construction class to define materials and geometry.
 
-class ESSDetectorConstruction : public G4VUserDetectorConstruction
-{
-  public:
-    ESSDetectorConstruction();
-    virtual ~ESSDetectorConstruction();
+class ESSDetectorConstruction : public G4VUserDetectorConstruction {
+public:
+  ESSDetectorConstruction();
+  virtual ~ESSDetectorConstruction();
 
-    virtual G4VPhysicalVolume* Construct();
-    virtual void ConstructSDandField();
+  virtual G4VPhysicalVolume *Construct();
+  virtual void ConstructSDandField();
 
-  protected:
-    virtual void ConstructMaterials();
+protected:
+  virtual void ConstructMaterials();
 };
 
 #endif
