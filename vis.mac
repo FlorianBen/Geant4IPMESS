@@ -17,7 +17,7 @@
 /vis/viewer/set/lightsVector -1 0 0
 
 # Specify style (surface, wireframe, auxiliary edges,...)
-/vis/viewer/set/style wireframe
+/vis/viewer/set/style surface
 #/vis/viewer/set/auxiliaryEdge true
 /vis/viewer/set/lineSegmentsPerCircle 30
 
@@ -33,9 +33,9 @@
 
 # To get nice view
 /vis/geometry/set/visibility World 0 false
-/vis/geometry/set/visibility PolyChamberOuterL 0 true
-# /vis/geometry/set/colour PolyChamberInnerL 0 yellow
-/vis/geometry/set/colour DiskL 0 red
+/vis/geometry/set/colour PolyChamberOuterL 0 0.7 0.7 0.7 0.3
+/vis/geometry/set/colour PolyChamberInnerL 0 0 0.5 1 0.3
+/vis/geometry/set/colour DiskL 0 0.7 0.7 0.7 1
 /vis/geometry/set/colour CameraL 0 yellow
 
 # Re-establish auto refreshing and verbosity:
