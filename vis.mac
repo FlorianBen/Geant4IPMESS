@@ -35,6 +35,7 @@
 /vis/geometry/set/visibility World 0 false
 /vis/geometry/set/colour PolyChamberOuterL 0 0.7 0.7 0.7 0.3
 /vis/geometry/set/colour PolyChamberInnerL 0 0 0.5 1 0.3
+/vis/geometry/set/colour QuadL 0 0.722 0.451 0.2 1
 /vis/geometry/set/colour DiskL 0 0.7 0.7 0.7 1
 /vis/geometry/set/colour CameraL 0 yellow
 

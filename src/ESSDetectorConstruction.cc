@@ -31,14 +31,14 @@
 
 #include <G4Box.hh>
 #include <G4LogicalVolume.hh>
+#include <G4MultiUnion.hh>
 #include <G4NistManager.hh>
 #include <G4PVPlacement.hh>
 #include <G4Polycone.hh>
 #include <G4SystemOfUnits.hh>
+#include <G4Transform3D.hh>
 #include <G4Tubs.hh>
 #include <G4UnionSolid.hh>
-#include <G4MultiUnion.hh>
-#include <G4Transform3D.hh>
 
 #include "CADMesh.hh"
 
@@ -47,7 +47,8 @@ ESSDetectorConstruction::ESSDetectorConstruction()
 
 ESSDetectorConstruction::~ESSDetectorConstruction() {}
 
-G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
+G4VPhysicalVolume *ESSDetectorConstruction::Construct()
+{
   // TODO: Split Material and construction
   // Get nist material manager
   auto nistManager = G4NistManager::Instance();
@@ -55,7 +56,7 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   // Build materials from NIST DB
   auto air = nistManager->FindOrBuildMaterial("G4_AIR");
   auto steelPipe = nistManager->FindOrBuildMaterial("G4_STAINLESS-STEEL");
-  auto copper = nistManager->FindOrBuildMaterial("G4_COPPER");
+  auto copper = nistManager->FindOrBuildMaterial("G4_Cu");
 
   // Build materials for vacuum.
   // Vacuum condition
@@ -127,40 +128,40 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   G4double zplanes = 6;
   // Outer shapes
   G4double rIOuter[]{0 * cm, 0 * cm, 0 * cm, 0 * cm, 0 * cm, 0. * cm};
-  G4double rOuter[]{55. * mm,  55. * mm, 130. * mm,
+  G4double rOuter[]{55. * mm, 55. * mm, 130. * mm,
                     130. * mm, 55. * mm, 55. * mm};
-  G4double zplaneOuter[]{-1000. * mm, -2 * mm,  0. * cm,
-                         457 * mm,    457 * mm, 1457 * mm};
+  G4double zplaneOuter[]{-1000. * mm, -2 * mm, 0. * cm,
+                         457 * mm, 457 * mm, 1457 * mm};
   auto pipeOuterBeamPoly = new G4Polycone("PolyChamber", phiS, phiT, zplanes,
                                           zplaneOuter, rIOuter, rOuter);
   auto wireScannerOuterBox =
       new G4Box("boxWSOuter", 155. * mm, 80. * mm, 29. * mm);
   auto cf200OuterTub =
-      new G4Tubs("cf200Outer", .0, 105 * mm, 12 * cm, phiS, phiT);
+      new G4Tubs("cf200Outer", .0, 105 * mm, 8 * cm, phiS, phiT);
   // Inner shapes
   G4double rIInner[]{0 * cm, 0 * cm, 0 * cm, 0 * cm, 0 * cm, 0. * cm};
   G4double rInner[]{50 * mm, 50 * mm, 125 * mm, 125 * mm, 50 * mm, 50 * mm};
-  G4double zplaneInner[]{-950. * mm, 0 * mm,   0. * cm,
-                         455 * mm,   455 * mm, 1455 * mm};
+  G4double zplaneInner[]{-950. * mm, 0 * mm, 0. * cm,
+                         455 * mm, 455 * mm, 1455 * mm};
   auto pipeInnerBeamPoly = new G4Polycone("PolyVacuum", phiS, phiT, zplanes,
                                           zplaneInner, rIInner, rInner);
   auto wireScannerInnerBox =
       new G4Box("boxSInner", 150. * mm, 75. * mm, 24. * mm);
   auto cf200InnerTub =
-      new G4Tubs("cf200Inner", .0, 100 * mm, 10 * cm, phiS, phiT);
+      new G4Tubs("cf200Inner", .0, 100 * mm, 6 * cm, phiS, phiT);
 
   // LWU => Position and rotations
   auto posLWU = G4ThreeVector(.0 * mm, .0 * mm, .0 * mm);
   auto rotLWU = G4RotationMatrix();
   auto trLWU = G4Transform3D(rotLWU, posLWU);
-  // Wire Scanner 
+  // Wire Scanner
   auto posWS1 = G4ThreeVector(0. * mm, 100. * mm, 65 * mm);
   auto posWS2 = G4ThreeVector(-100. * mm, 0., 65 * mm);
   auto rotWS1 = G4RotationMatrix();
   rotWS1.rotateZ(90. * deg);
   auto rotWS2 = G4RotationMatrix();
-  auto trWS1 = G4Transform3D(rotWS1,posWS1);
-  auto trWS2 = G4Transform3D(rotWS2,posWS2);
+  auto trWS1 = G4Transform3D(rotWS1, posWS1);
+  auto trWS2 = G4Transform3D(rotWS2, posWS2);
   // CF200
   auto posCF200_1 = G4ThreeVector(100. * mm, 0. * mm, 206 * mm);
   auto posCF200_2 = G4ThreeVector(0. * mm, 100. * mm, 337 * mm);
@@ -168,12 +169,12 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   rotCF200_1.rotateY(90. * deg);
   auto rotCF200_2 = G4RotationMatrix();
   rotCF200_2.rotateX(90. * deg);
-  //rotCF200_2.rotateX(90. * deg);
+  // rotCF200_2.rotateX(90. * deg);
   auto trCF200_1 = G4Transform3D(rotCF200_1, posCF200_1);
   auto trCF200_2 = G4Transform3D(rotCF200_2, posCF200_2);
 
   // Union for outer shell
-  G4MultiUnion* unionOuter = new G4MultiUnion("OuterUnion");
+  G4MultiUnion *unionOuter = new G4MultiUnion("OuterUnion");
   unionOuter->AddNode(*pipeOuterBeamPoly, trLWU);
   unionOuter->AddNode(*wireScannerOuterBox, trWS1);
   unionOuter->AddNode(*wireScannerOuterBox, trWS2);
@@ -188,7 +189,7 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
                     worldLV, false, 0, checkOverlaps);
 
   // Union for inner shell
-  G4MultiUnion* unionInner = new G4MultiUnion("InnerUnion");
+  G4MultiUnion *unionInner = new G4MultiUnion("InnerUnion");
   unionInner->AddNode(*pipeInnerBeamPoly, trLWU);
   unionInner->AddNode(*wireScannerInnerBox, trWS1);
   unionInner->AddNode(*wireScannerInnerBox, trWS2);
@@ -212,40 +213,40 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   new G4PVPlacement(0, G4ThreeVector(.0, .0, 289 * mm), diskL, "Disk2",
                     pipeVacuumL, false, 1, checkOverlaps);
 
-
   // IPM1
   // TODO: Change to MACOR
   // TODO: Add PCB
   auto offset = G4ThreeVector(-1.12595 * mm, -958.165 * mm, -261.819 * mm);
-  CADMesh *meshIPM = new CADMesh("IPM/out_cadreV2.stl", mm, offset, false);
+  CADMesh *meshIPM = new CADMesh("IPM/out_Part__Feature001_cadre_V20001.stl",
+                                 mm, offset, false);
   auto IPM1Cadre1 = meshIPM->TessellatedMesh();
   auto IPML = new G4LogicalVolume(IPM1Cadre1, steelPipe, "IPML");
   auto rotIPM1 = new G4RotationMatrix();
   rotIPM1->rotateY(-90. * deg);
 
-  new G4PVPlacement(rotIPM1, G4ThreeVector(.0 * mm, 60.0 * mm, 206 * mm), IPML, "IPM1",
-                    pipeVacuumL, false, 0, checkOverlaps);
+  new G4PVPlacement(rotIPM1, G4ThreeVector(.0 * mm, 60.0 * mm, 206 * mm), IPML,
+                    "IPM1", pipeVacuumL, false, 0, checkOverlaps);
 
   rotIPM1 = new G4RotationMatrix();
   rotIPM1->rotateY(-90. * deg);
   rotIPM1->rotateZ(180. * deg);
-  new G4PVPlacement(rotIPM1, G4ThreeVector(.0 * mm, -60.0 * mm, 206 * mm), IPML, "IPM2",
-                    pipeVacuumL, false, 1, checkOverlaps);
+  new G4PVPlacement(rotIPM1, G4ThreeVector(.0 * mm, -60.0 * mm, 206 * mm), IPML,
+                    "IPM2", pipeVacuumL, false, 1, checkOverlaps);
 
   // IPM2
   auto rotIPM2 = new G4RotationMatrix();
   rotIPM2->rotateX(90. * deg);
   rotIPM2->rotateZ(90. * deg);
 
-  new G4PVPlacement(rotIPM2, G4ThreeVector(60.0 * mm, 0.0 * mm, 372 * mm), IPML, "IPM1",
-                    pipeVacuumL, false, 0, checkOverlaps);
+  new G4PVPlacement(rotIPM2, G4ThreeVector(60.0 * mm, 0.0 * mm, 372 * mm), IPML,
+                    "IPM1", pipeVacuumL, false, 0, checkOverlaps);
 
   rotIPM2 = new G4RotationMatrix();
   rotIPM2->rotateX(90. * deg);
   rotIPM2->rotateZ(90. * deg);
   rotIPM2->rotateZ(180. * deg);
-  new G4PVPlacement(rotIPM2, G4ThreeVector(-60.0 * mm, .0 * mm, 372 * mm), IPML, "IPM2",
-                    pipeVacuumL, false, 1, checkOverlaps);
+  new G4PVPlacement(rotIPM2, G4ThreeVector(-60.0 * mm, .0 * mm, 372 * mm), IPML,
+                    "IPM2", pipeVacuumL, false, 1, checkOverlaps);
 
   // MCP
   // TODO: Add MCP
@@ -258,7 +259,7 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
       new CADMesh("Camera/out_FL2-016-R0.stl", mm, offsetcam, false);
   CADMesh *meshLens =
       new CADMesh("Lens/out_21912E0W.stl", mm, offsetcam, false);
-  
+
   G4VSolid *cadsolidCam = meshCam->TessellatedMesh();
   G4VSolid *cadsolidLens = meshLens->TessellatedMesh();
 
@@ -276,13 +277,70 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   new G4PVPlacement(rotCam2, G4ThreeVector(.0 * mm, 350. * mm, 372 * mm), camL,
                     "Cam2", worldLV, false, 1, checkOverlaps);
   new G4PVPlacement(rotCam2, G4ThreeVector(.0 * mm, 290. * mm, 372 * mm), LensL,
-                    "Lens2", worldLV, false, 0, checkOverlaps);
+                    "Lens2", worldLV, false, 1, checkOverlaps);
 
   // WS
 
-  // Dipole
+  // Quad
+  auto offsetquad = G4ThreeVector(-401 * mm, .0 * mm, .0 * mm);
+  auto rotQuad = new G4RotationMatrix();
+  rotQuad->rotateX(-90 * deg);
+  rotQuad->rotateZ(-90 * deg);
+
+  CADMesh *meshQ1 = new CADMesh("LWU/outPart__Feature460_SOLID0460.stl", mm,
+                                offsetquad, false);
+  G4VSolid *cadsolidQuad = meshQ1->TessellatedMesh();
+  auto quadL = new G4LogicalVolume(cadsolidQuad, copper, "QuadL");
+  new G4PVPlacement(new G4RotationMatrix(*rotQuad),
+                    G4ThreeVector(.0 * mm, 0. * mm, -273 * mm), quadL, "Quad1",
+                    worldLV, false, 0, checkOverlaps);
+  rotQuad->rotateX(-90 * deg);
+  new G4PVPlacement(new G4RotationMatrix(*rotQuad),
+                    G4ThreeVector(.0 * mm, 0. * mm, -273 * mm), quadL, "Quad2",
+                    worldLV, false, 1, checkOverlaps);
+  rotQuad->rotateX(-90 * deg);
+  new G4PVPlacement(new G4RotationMatrix(*rotQuad),
+                    G4ThreeVector(.0 * mm, 0. * mm, -273 * mm), quadL, "Quad3",
+                    worldLV, false, 2, checkOverlaps);
+  rotQuad->rotateX(-90 * deg);
+  new G4PVPlacement(new G4RotationMatrix(*rotQuad),
+                    G4ThreeVector(.0 * mm, 0. * mm, -273 * mm), quadL, "Quad4",
+                    worldLV, false, 3, checkOverlaps);
+
+  new G4PVPlacement(new G4RotationMatrix(*rotQuad),
+                    G4ThreeVector(.0 * mm, 0. * mm, 592.2 * mm), quadL, "Quad5",
+                    worldLV, false, 4, checkOverlaps);
+  rotQuad->rotateX(-90 * deg);
+  new G4PVPlacement(new G4RotationMatrix(*rotQuad),
+                    G4ThreeVector(.0 * mm, 0. * mm, 592.2 * mm), quadL, "Quad6",
+                    worldLV, false, 5, checkOverlaps);
+  rotQuad->rotateX(-90 * deg);
+  new G4PVPlacement(new G4RotationMatrix(*rotQuad),
+                    G4ThreeVector(.0 * mm, 0. * mm, 592.2 * mm), quadL, "Quad7",
+                    worldLV, false, 6, checkOverlaps);
+  rotQuad->rotateX(-90 * deg);
+  new G4PVPlacement(new G4RotationMatrix(*rotQuad),
+                    G4ThreeVector(.0 * mm, 0. * mm, 592.2 * mm), quadL, "Quad8",
+                    worldLV, false, 7, checkOverlaps);
 
   // LWU Support
+  auto offsetsupport1 = G4ThreeVector(+720, -215, +510);
+  auto rotSupport = new G4RotationMatrix();
+
+  CADMesh *meshSupport1 =
+      new CADMesh("LWU/outPart__Feature_289-10348-01_AF00000.stl", mm,
+                  offsetsupport1, false);
+  G4VSolid *cadsolidSupport = meshSupport1->TessellatedMesh();
+  auto SupportL = new G4LogicalVolume(cadsolidSupport, steelPipe, "SupportL");
+  rotSupport->rotateX(-90 * deg);
+  rotSupport->rotateZ(-90 * deg);
+
+  new G4PVPlacement(rotSupport,
+                    G4ThreeVector(210. * mm, -513. * mm, -456. * mm), SupportL,
+                    "Support1", worldLV, false, 0, checkOverlaps);
+  new G4PVPlacement(rotSupport,
+                    G4ThreeVector(-210. * mm, -513. * mm, -456. * mm), SupportL,
+                    "Support1", worldLV, false, 1, checkOverlaps);
 
   // always return the physical World
   return worldPV;
