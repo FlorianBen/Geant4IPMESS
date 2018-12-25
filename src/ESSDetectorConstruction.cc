@@ -55,6 +55,7 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   // Build materials from NIST DB
   auto air = nistManager->FindOrBuildMaterial("G4_AIR");
   auto steelPipe = nistManager->FindOrBuildMaterial("G4_STAINLESS-STEEL");
+  auto copper = nistManager->FindOrBuildMaterial("G4_COPPER");
 
   // Build materials for vacuum.
   // Vacuum condition
@@ -233,37 +234,49 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
 
   // IPM2
   auto rotIPM2 = new G4RotationMatrix();
-  rotIPM2->rotateY(-90. * deg);
+  rotIPM2->rotateX(90. * deg);
+  rotIPM2->rotateZ(90. * deg);
 
-  new G4PVPlacement(rotIPM2, G4ThreeVector(.0 * mm, 60.0 * mm, 372 * mm), IPML, "IPM1",
+  new G4PVPlacement(rotIPM2, G4ThreeVector(60.0 * mm, 0.0 * mm, 372 * mm), IPML, "IPM1",
                     pipeVacuumL, false, 0, checkOverlaps);
 
   rotIPM2 = new G4RotationMatrix();
-  rotIPM2->rotateY(-90. * deg);
+  rotIPM2->rotateX(90. * deg);
+  rotIPM2->rotateZ(90. * deg);
   rotIPM2->rotateZ(180. * deg);
-  new G4PVPlacement(rotIPM2, G4ThreeVector(.0 * mm, -60.0 * mm, 372 * mm), IPML, "IPM2",
+  new G4PVPlacement(rotIPM2, G4ThreeVector(-60.0 * mm, .0 * mm, 372 * mm), IPML, "IPM2",
                     pipeVacuumL, false, 1, checkOverlaps);
 
   // MCP
   // TODO: Add MCP
 
   // Camera
-  // TODO: Add lens
   // TODO: Add sensor in camera
   // TODO: Add materials
   auto offsetcam = G4ThreeVector(-0 * cm, 0, 0);
-  CADMesh *meshcam =
+  CADMesh *meshCam =
       new CADMesh("Camera/out_FL2-016-R0.stl", mm, offsetcam, false);
-  G4VSolid *cad_solid = meshcam->TessellatedMesh();
+  CADMesh *meshLens =
+      new CADMesh("Lens/out_21912E0W.stl", mm, offsetcam, false);
+  
+  G4VSolid *cadsolidCam = meshCam->TessellatedMesh();
+  G4VSolid *cadsolidLens = meshLens->TessellatedMesh();
+
   auto rotCam1 = new G4RotationMatrix();
   rotCam1->rotateY(90. * deg);
-  auto camL = new G4LogicalVolume(cad_solid, vacuumGas, "CameraL");
-  new G4PVPlacement(rotCam1, G4ThreeVector(290. * mm, .0 * mm, 206 * mm), camL,
+  auto camL = new G4LogicalVolume(cadsolidCam, steelPipe, "CameraL");
+  auto LensL = new G4LogicalVolume(cadsolidLens, steelPipe, "LensL");
+
+  new G4PVPlacement(rotCam1, G4ThreeVector(350. * mm, .0 * mm, 206 * mm), camL,
                     "Cam1", worldLV, false, 0, checkOverlaps);
+  new G4PVPlacement(rotCam1, G4ThreeVector(290. * mm, .0 * mm, 206 * mm), LensL,
+                    "Lens1", worldLV, false, 0, checkOverlaps);
   auto rotCam2 = new G4RotationMatrix();
   rotCam2->rotateX(-90. * deg);
-  new G4PVPlacement(rotCam2, G4ThreeVector(.0 * mm, 290. * mm, 372 * mm), camL,
+  new G4PVPlacement(rotCam2, G4ThreeVector(.0 * mm, 350. * mm, 372 * mm), camL,
                     "Cam2", worldLV, false, 1, checkOverlaps);
+  new G4PVPlacement(rotCam2, G4ThreeVector(.0 * mm, 290. * mm, 372 * mm), LensL,
+                    "Lens2", worldLV, false, 0, checkOverlaps);
 
   // WS
 
