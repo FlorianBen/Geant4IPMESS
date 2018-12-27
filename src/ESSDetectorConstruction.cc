@@ -329,7 +329,7 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
   rotQuad->rotateX(-90 * deg);
   rotQuad->rotateZ(-90 * deg);
 
-  CADMesh *meshQ1 = new CADMesh("LWU_Spoke/outPart__Feature460_SOLID0460.stl",
+  CADMesh *meshQ1 = new CADMesh("LWU_E_type1/outPart__Feature460_SOLID0460.stl",
                                mm, offsetquad, false);
   G4VSolid *cadsolidQuad = meshQ1->TessellatedMesh();
   auto quadL = new G4LogicalVolume(cadsolidQuad, copper, "QuadL");
