@@ -60,7 +60,7 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
 
   // Build materials for vacuum.
   // Vacuum condition
-  G4double density = (1e0 / 1013.) * 27. * mg / cm3;
+  G4double density = (1e-12 / 1013.) * 27. * mg / cm3;
   G4double tempVacuum = 293. * kelvin;
   G4double presVacuum = 1.0e-12 * bar;
 
@@ -216,37 +216,53 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
   // IPM1
   // TODO: Change to MACOR
   // TODO: Add PCB
+  // TODO: Clean
   auto offset = G4ThreeVector(-1.12595 * mm, -958.165 * mm, -261.819 * mm);
-  CADMesh *meshIPM = new CADMesh("IPM/out_Part__Feature001_cadre_V20001.stl",
-                                 mm, offset, false);
+  auto meshIPM = new CADMesh("IPM/out_Part__Feature001_cadre_V20001.stl",
+                             mm, offset, false);
+  auto meshPCBBT = new CADMesh("IPM/out_Part__Feature035_Plaque_BT0035.stl", mm,
+                               G4ThreeVector(-1.12595 * mm, -916.165 * mm, -311.819 * mm), false);
   auto IPM1Cadre1 = meshIPM->TessellatedMesh();
   auto IPML = new G4LogicalVolume(IPM1Cadre1, steelPipe, "IPML");
-  auto rotIPM1 = new G4RotationMatrix();
-  rotIPM1->rotateY(-90. * deg);
 
-  new G4PVPlacement(rotIPM1, G4ThreeVector(.0 * mm, 60.0 * mm, 206 * mm), IPML,
-                    "IPM1", pipeVacuumL, false, 0, checkOverlaps);
+  auto PCBBT = meshPCBBT->TessellatedMesh();
+  auto PCBBTL = new G4LogicalVolume(PCBBT, steelPipe, "PCBBTL");
+
+  auto rotPCBBT = new G4RotationMatrix();
+  rotPCBBT->rotateY(-90. * deg);
+  rotPCBBT->rotateZ(90. * deg);
+  new G4PVPlacement(new G4RotationMatrix(*rotPCBBT), G4ThreeVector(50 * mm, .0 * mm, 206 * mm), PCBBTL,
+                    "PCBBT1", pipeVacuumL, false, 0, checkOverlaps);
+
+  auto rotIPM1 = new G4RotationMatrix();
+  rotIPM1->rotateX(-90. * deg);
+  rotIPM1->rotateY(-90. * deg);
+  new G4PVPlacement(new G4RotationMatrix(*rotIPM1), G4ThreeVector(.0 * mm, 0.0 * mm, 248 * mm), IPML,
+                    "C1IPM1", pipeVacuumL, false, 0, checkOverlaps);
 
   rotIPM1 = new G4RotationMatrix();
+  rotIPM1->rotateX(90. * deg);
   rotIPM1->rotateY(-90. * deg);
-  rotIPM1->rotateZ(180. * deg);
-  new G4PVPlacement(rotIPM1, G4ThreeVector(.0 * mm, -60.0 * mm, 206 * mm), IPML,
-                    "IPM2", pipeVacuumL, false, 1, checkOverlaps);
+  new G4PVPlacement(new G4RotationMatrix(*rotIPM1), G4ThreeVector(.0 * mm, -0.0 * mm, 164 * mm), IPML,
+                    "C2IPM1", pipeVacuumL, false, 1, checkOverlaps);
 
   // IPM2
   auto rotIPM2 = new G4RotationMatrix();
   rotIPM2->rotateX(90. * deg);
-  rotIPM2->rotateZ(90. * deg);
+  rotPCBBT = new G4RotationMatrix();
+  rotPCBBT->rotateX(90. * deg);
 
-  new G4PVPlacement(rotIPM2, G4ThreeVector(60.0 * mm, 0.0 * mm, 372 * mm), IPML,
-                    "IPM1", pipeVacuumL, false, 0, checkOverlaps);
+  new G4PVPlacement(rotPCBBT, G4ThreeVector(0 * mm, 50.0 * mm, 372 * mm), PCBBTL,
+                    "PCBBT2", pipeVacuumL, false, 1, checkOverlaps);
+
+  new G4PVPlacement(new G4RotationMatrix(*rotIPM2), G4ThreeVector(0 * mm, 0.0 * mm, 330 * mm), IPML,
+                    "C1IPM2", pipeVacuumL, false, 0, checkOverlaps);
 
   rotIPM2 = new G4RotationMatrix();
   rotIPM2->rotateX(90. * deg);
-  rotIPM2->rotateZ(90. * deg);
   rotIPM2->rotateZ(180. * deg);
-  new G4PVPlacement(rotIPM2, G4ThreeVector(-60.0 * mm, .0 * mm, 372 * mm), IPML,
-                    "IPM2", pipeVacuumL, false, 1, checkOverlaps);
+  new G4PVPlacement(new G4RotationMatrix(*rotIPM2), G4ThreeVector(0 * mm, .0 * mm, 414 * mm), IPML,
+                    "C2IPM2", pipeVacuumL, false, 1, checkOverlaps);
 
   // MCP
   // TODO: Add MCP
@@ -282,53 +298,72 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
   // WS
 
   // Quad
-  auto offsetquad = G4ThreeVector(-401 * mm, .0 * mm, .0 * mm);
+  
+  auto offsetquad = G4ThreeVector(-540 * mm, .0 * mm, .0 * mm);
   auto rotQuad = new G4RotationMatrix();
   rotQuad->rotateX(-90 * deg);
   rotQuad->rotateZ(-90 * deg);
 
-  CADMesh *meshQ1 = new CADMesh("LWU/outPart__Feature460_SOLID0460.stl", mm,
+  CADMesh *meshQ1 = new CADMesh("LWU_E_type1/outPart__Feature460_SOLID0460.stl", mm,
                                 offsetquad, false);
   G4VSolid *cadsolidQuad = meshQ1->TessellatedMesh();
   auto quadL = new G4LogicalVolume(cadsolidQuad, copper, "QuadL");
   new G4PVPlacement(new G4RotationMatrix(*rotQuad),
-                    G4ThreeVector(.0 * mm, 0. * mm, -273 * mm), quadL, "Quad1",
+                    G4ThreeVector(.0 * mm, 0. * mm, -175 * mm), quadL, "Quad1",
                     worldLV, false, 0, checkOverlaps);
   rotQuad->rotateX(-90 * deg);
   new G4PVPlacement(new G4RotationMatrix(*rotQuad),
-                    G4ThreeVector(.0 * mm, 0. * mm, -273 * mm), quadL, "Quad2",
+                    G4ThreeVector(.0 * mm, 0. * mm, -175 * mm), quadL, "Quad2",
                     worldLV, false, 1, checkOverlaps);
   rotQuad->rotateX(-90 * deg);
   new G4PVPlacement(new G4RotationMatrix(*rotQuad),
-                    G4ThreeVector(.0 * mm, 0. * mm, -273 * mm), quadL, "Quad3",
+                    G4ThreeVector(.0 * mm, 0. * mm, -175 * mm), quadL, "Quad3",
                     worldLV, false, 2, checkOverlaps);
   rotQuad->rotateX(-90 * deg);
   new G4PVPlacement(new G4RotationMatrix(*rotQuad),
-                    G4ThreeVector(.0 * mm, 0. * mm, -273 * mm), quadL, "Quad4",
+                    G4ThreeVector(.0 * mm, 0. * mm, -175 * mm), quadL, "Quad4",
                     worldLV, false, 3, checkOverlaps);
 
   new G4PVPlacement(new G4RotationMatrix(*rotQuad),
-                    G4ThreeVector(.0 * mm, 0. * mm, 592.2 * mm), quadL, "Quad5",
+                    G4ThreeVector(.0 * mm, 0. * mm, 905 * mm), quadL, "Quad5",
                     worldLV, false, 4, checkOverlaps);
   rotQuad->rotateX(-90 * deg);
   new G4PVPlacement(new G4RotationMatrix(*rotQuad),
-                    G4ThreeVector(.0 * mm, 0. * mm, 592.2 * mm), quadL, "Quad6",
+                    G4ThreeVector(.0 * mm, 0. * mm, 905 * mm), quadL, "Quad6",
                     worldLV, false, 5, checkOverlaps);
   rotQuad->rotateX(-90 * deg);
   new G4PVPlacement(new G4RotationMatrix(*rotQuad),
-                    G4ThreeVector(.0 * mm, 0. * mm, 592.2 * mm), quadL, "Quad7",
+                    G4ThreeVector(.0 * mm, 0. * mm, 905 * mm), quadL, "Quad7",
                     worldLV, false, 6, checkOverlaps);
   rotQuad->rotateX(-90 * deg);
   new G4PVPlacement(new G4RotationMatrix(*rotQuad),
-                    G4ThreeVector(.0 * mm, 0. * mm, 592.2 * mm), quadL, "Quad8",
+                    G4ThreeVector(.0 * mm, 0. * mm, 905 * mm), quadL, "Quad8",
                     worldLV, false, 7, checkOverlaps);
+  // Quad Support
+  auto offsetQuadsupport1 = G4ThreeVector(540 * mm, 0 * mm, 0 * mm);
+  auto rotQuadSupport = new G4RotationMatrix();
 
+  CADMesh *meshQuadSupport1 =
+      new CADMesh("LWU_E_type1/outPart__Feature451_SOLID0451.stl", mm,
+                  offsetQuadsupport1, false);
+  G4VSolid *cadsolidQuadSupport = meshQuadSupport1->TessellatedMesh();
+  auto QuadSupportL = new G4LogicalVolume(cadsolidQuadSupport, steelPipe, "QuadSupportL");
+  rotQuadSupport->rotateX(90 * deg);
+  rotQuadSupport->rotateZ(90 * deg);
+
+  new G4PVPlacement(new G4RotationMatrix(*rotQuadSupport),
+                    G4ThreeVector(0. * mm, 0. * mm, -175. * mm), QuadSupportL,
+                    "QuadSupport1", worldLV, false, 0, checkOverlaps);
+  rotQuadSupport->rotateZ(-180 * deg);
+  new G4PVPlacement(rotQuadSupport,
+                    G4ThreeVector(0. * mm, 0. * mm, 905. * mm), QuadSupportL,
+                    "QuadSupport2", worldLV, false, 1, checkOverlaps);
   // LWU Support
-  auto offsetsupport1 = G4ThreeVector(+720, -215, +510);
+  auto offsetsupport1 = G4ThreeVector(720 * mm, -215 * mm, 510 * mm);
   auto rotSupport = new G4RotationMatrix();
 
   CADMesh *meshSupport1 =
-      new CADMesh("LWU/outPart__Feature_289-10348-01_AF00000.stl", mm,
+      new CADMesh("LWU_E_type1/outPart__Feature_289-10233-01_AF10000.stl", mm,
                   offsetsupport1, false);
   G4VSolid *cadsolidSupport = meshSupport1->TessellatedMesh();
   auto SupportL = new G4LogicalVolume(cadsolidSupport, steelPipe, "SupportL");
