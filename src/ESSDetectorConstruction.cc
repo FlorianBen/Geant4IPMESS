@@ -38,7 +38,8 @@
 #include <G4SystemOfUnits.hh>
 #include <G4Transform3D.hh>
 #include <G4Tubs.hh>
-#include <G4UnionSolid.hh>
+#include <G4Trd.hh>
+#include <G4SubtractionSolid.hh>
 
 #include "CADMesh.hh"
 
@@ -217,17 +218,20 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
   // TODO: Change to MACOR
   // TODO: Add PCB
   // TODO: Clean
-  auto offset = G4ThreeVector(-1.12595 * mm, -958.165 * mm, -261.819 * mm);
-  auto meshIPM = new CADMesh("IPM/out_Part__Feature001_cadre_V20001.stl", mm,
-                             offset, false);
-  auto meshPCBBT = new CADMesh(
-      "IPM/out_Part__Feature035_Plaque_BT0035.stl", mm,
-      G4ThreeVector(-1.12595 * mm, -916.165 * mm, -311.819 * mm), false);
+  auto meshIPM = CADMesh::TessellatedMesh::FromSTL("IPM/out_Part__Feature001_cadre_V20001.stl");
+  meshIPM->SetScale(m);
+  meshIPM->SetReverse(false);
+  meshIPM->SetOffset(G4ThreeVector(-1.12595 * mm, -958.165 * mm, -261.819 * mm));
+  auto meshPCBBT = CADMesh::TessellatedMesh::FromSTL("IPM/out_Part__Feature035_Plaque_BT0035.stl");
+  meshPCBBT->SetScale(mm);
+  meshPCBBT->SetReverse(false);
+  meshPCBBT->SetOffset(G4ThreeVector(-1.12595 * mm,-916.165 * mm, -311.819 * mm));
+ 
   auto boxPCB = new G4Box("PCB", 1. * mm, 49. * mm, 49. * mm);
-  auto IPM1Cadre1 = meshIPM->TessellatedMesh();
+  auto IPM1Cadre1 = meshIPM->GetSolid();
   auto IPML = new G4LogicalVolume(IPM1Cadre1, steelPipe, "IPML");
 
-  auto PCBBT = meshPCBBT->TessellatedMesh();
+  auto PCBBT = meshPCBBT->GetSolid();
   auto PCBBTL = new G4LogicalVolume(PCBBT, steelPipe, "PCBBTL");
 
   auto PCBL = new G4LogicalVolume(boxPCB, steelPipe, "PCBL");
@@ -245,16 +249,17 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
                     "PCB4", pipeVacuumL, false, 3, checkOverlaps);
   new G4PVPlacement(nullptr, G4ThreeVector(50.5 * mm, .0 * mm, 372 * mm), PCBL,
                     "PCB5", pipeVacuumL, false, 4, checkOverlaps);
-  new G4PVPlacement(rotPCB, G4ThreeVector(0 * mm, -51.0 * mm, 372 * mm), PCBL,
+  new G4PVPlacement(rotPCB, G4ThreeVector(0 * mm, -50.5 * mm, 372 * mm), PCBL,
                     "PCB6", pipeVacuumL, false, 5, checkOverlaps);
 
   auto rotPCBBT = new G4RotationMatrix();
   rotPCBBT->rotateY(-90. * deg);
   rotPCBBT->rotateZ(90. * deg);
   new G4PVPlacement(new G4RotationMatrix(*rotPCBBT),
-                    G4ThreeVector(50 * mm, .0 * mm, 206 * mm), PCBBTL, "PCBBT1",
+                    G4ThreeVector(49.5 * mm, .0 * mm, 206 * mm), PCBBTL, "PCBBT1",
                     pipeVacuumL, false, 0, checkOverlaps);
 
+  
   auto rotIPM1 = new G4RotationMatrix();
   rotIPM1->rotateX(-90. * deg);
   rotIPM1->rotateY(-90. * deg);
@@ -275,7 +280,7 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
   rotPCBBT = new G4RotationMatrix();
   rotPCBBT->rotateX(90. * deg);
 
-  new G4PVPlacement(rotPCBBT, G4ThreeVector(0 * mm, 50.0 * mm, 372 * mm),
+  new G4PVPlacement(rotPCBBT, G4ThreeVector(0 * mm, 49.5 * mm, 372 * mm),
                     PCBBTL, "PCBBT2", pipeVacuumL, false, 1, checkOverlaps);
 
   new G4PVPlacement(new G4RotationMatrix(*rotIPM2),
@@ -288,7 +293,8 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
   new G4PVPlacement(new G4RotationMatrix(*rotIPM2),
                     G4ThreeVector(0 * mm, .0 * mm, 414 * mm), IPML, "C2IPM2",
                     pipeVacuumL, false, 1, checkOverlaps);
-
+                    
+/*
   // MCP
   // TODO: Add MCP
 
@@ -323,7 +329,6 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
   // WS
 
   // Quad
-
   auto offsetquad = G4ThreeVector(-540 * mm, .0 * mm, .0 * mm);
   auto rotQuad = new G4RotationMatrix();
   rotQuad->rotateX(-90 * deg);
@@ -331,6 +336,7 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
 
   CADMesh *meshQ1 = new CADMesh("LWU_E_type1/outPart__Feature460_SOLID0460.stl",
                                mm, offsetquad, false);
+  
   G4VSolid *cadsolidQuad = meshQ1->TessellatedMesh();
   auto quadL = new G4LogicalVolume(cadsolidQuad, copper, "QuadL");
   new G4PVPlacement(new G4RotationMatrix(*rotQuad),
@@ -405,6 +411,7 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
                     "Support1", worldLV, false, 1, checkOverlaps);
 
   // always return the physical World
+  */
   return worldPV;
 }
 
