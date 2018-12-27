@@ -33,11 +33,15 @@
 
 # To get nice view
 /vis/geometry/set/visibility World 0 false
-/vis/geometry/set/colour PolyChamberOuterL 0 0.7 0.7 0.7 0.3
-/vis/geometry/set/colour PolyChamberInnerL 0 0 0.5 1 0.3
+/vis/geometry/set/colour PolyChamberOuterL 0 0.5 0.6 0.6 0.3
+/vis/geometry/set/colour QuadSupportL 0 0.6 0.6 0.6 0.4
+/vis/geometry/set/colour SupportL 0 0.7 0.7 0.7 1
+/vis/geometry/set/colour PolyChamberInnerL 0 0 0.7 1 0.3
 /vis/geometry/set/colour QuadL 0 0.722 0.451 0.2 1
-/vis/geometry/set/colour DiskL 0 0.7 0.7 0.7 1
-/vis/geometry/set/colour CameraL 0 yellow
+/vis/geometry/set/colour PCBBTL 0 0.722 0.55 0.2 1
+/vis/geometry/set/colour DiskL 0 0.5 0.5 0.5 0.5
+/vis/geometry/set/colour CameraL 0 0.25 0.25 0.25 1
+/vis/geometry/set/colour LensL 0 0.3 0.3 0.3 1
 
 # Re-establish auto refreshing and verbosity:
 /vis/viewer/set/autoRefresh true
