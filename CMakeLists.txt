@@ -23,13 +23,19 @@ set(Geant4ESS_inc
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSEventAction.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSDetectorConstruction.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSActionInitialization.hh
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSPrimaryGeneratorAction.hh)
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSPrimaryGeneratorAction.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSCameraHit.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSCameraSD.hh
+  )
 
 set(Geant4ESS_src
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSEventAction.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSDetectorConstruction.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSActionInitialization.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSPrimaryGeneratorAction.cc)
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSPrimaryGeneratorAction.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSCameraHit.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSCameraSD.cc
+  )
 
 add_executable(Geant4ESS main.cpp ${Geant4ESS_inc} ${Geant4ESS_src})
 target_link_libraries(Geant4ESS ${Geant4_LIBRARIES})
