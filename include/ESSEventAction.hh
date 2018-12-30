@@ -17,8 +17,6 @@ class ESSEventAction : public G4UserEventAction
   bool fVerbose;
 };
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 #endif
 
     
