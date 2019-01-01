@@ -4,7 +4,7 @@
 
 #include <iomanip>
 
-G4Allocator<ESSCameraHit>* ESSCameraHitAllocator = 0;
+G4ThreadLocal G4Allocator<ESSCameraHit>* ESSCameraHitAllocator = 0;
 
 ESSCameraHit::ESSCameraHit()
  : G4VHit(),

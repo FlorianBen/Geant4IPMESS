@@ -16,7 +16,6 @@ public:
 
   virtual void Initialize(G4HCofThisEvent *hce);
   virtual G4bool ProcessHits(G4Step *step, G4TouchableHistory *history);
-  virtual void EndOfEvent(G4HCofThisEvent *hce);
 
 private:
   ESSCameraHitsCollection *fHitsCollection;
