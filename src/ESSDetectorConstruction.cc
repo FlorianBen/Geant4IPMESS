@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include <G4GDMLParser.hh>
 #include <G4Box.hh>
 #include <G4LogicalVolume.hh>
 #include <G4MultiUnion.hh>
@@ -78,13 +79,15 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
   // Quads
   auto solidQuad = ConstructSolidQuad();
   ConstructQuad(solidQuad);
-  //auto solidQuadSupport = ConstructSolidQuadSupport();
-  //ConstructQuadSupport(solidQuadSupport);
+  auto solidQuadSupport = ConstructSolidQuadSupport();
+  ConstructQuadSupport(solidQuadSupport);
 
   // LWU Support
   auto solidSupportLWU = ConstructSolidLWUSupport();
   ConstructLWUSupport(solidSupportLWU);
-
+  
+  //G4GDMLParser parser;
+  //parser.Write("out.gdml", worldPV);
   return worldPV;
 }
 
@@ -92,7 +95,7 @@ void ESSDetectorConstruction::ConstructSDandField() {
   auto sdManager = G4SDManager::GetSDMpointer();
   auto cameraSD = new ESSCameraSD("CamSD","CameraCollection");
   sdManager->AddNewDetector(cameraSD);
-  camL->SetSensitiveDetector(cameraSD);
+  quadL->SetSensitiveDetector(cameraSD);
 }
 
 void ESSDetectorConstruction::ConstructMaterials()

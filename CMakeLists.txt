@@ -20,12 +20,15 @@ include_directories(${CADMESH_INCLUDE_DIRS})
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(Geant4ESS_inc
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSAnalysis.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSEventAction.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSDetectorConstruction.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSActionInitialization.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSPrimaryGeneratorAction.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSCameraHit.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSCameraSD.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSRunAction.hh
+
   )
 
 set(Geant4ESS_src
@@ -35,6 +38,7 @@ set(Geant4ESS_src
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSPrimaryGeneratorAction.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSCameraHit.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSCameraSD.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSRunAction.cc
   )
 
 add_executable(Geant4ESS main.cpp ${Geant4ESS_inc} ${Geant4ESS_src})
@@ -49,6 +53,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/init_vis.mac ${CMAKE_CURRENT_BINARY_D
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/icons.mac ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/vis.mac ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/run.mac ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/camera.C ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+
 
 add_custom_command(TARGET Geant4ESS POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
