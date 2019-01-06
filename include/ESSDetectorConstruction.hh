@@ -83,6 +83,10 @@ protected:
    */
   G4VSolid *ConstructSolidMCP();
   /**
+   * Construck IPM Phosphor solid.
+   */
+  G4VSolid *ConstructSolidPhos();
+  /**
    * Construct Quadrupole solid.
    */
   G4VSolid *ConstructSolidQuad();
@@ -114,7 +118,7 @@ protected:
   /**
    * Placement of MCPs.
    */
-  void ConstructMCP();
+  void ConstructMCP(G4VSolid *solidMCP, G4VSolid *solidPhosp = nullptr, G4VSolid *solidFrame = nullptr);
   /**
    * Placement of Quadrupoles.
    */
@@ -138,6 +142,8 @@ private:
   G4Material *mat_copper;
   G4Material *mat_gold;
   G4Material *mat_macor;
+  G4Material *mat_mcp_glass;
+  G4Material *mat_pcb;
   G4Material *mat_steel;
   G4Material *mat_vacuum;
 
@@ -148,6 +154,7 @@ private:
   G4LogicalVolume *CIPML;
   G4LogicalVolume *PCB_BTL;
   G4LogicalVolume *PCB_HTL;
+  G4LogicalVolume *mcpL;
   G4LogicalVolume *camL;
   G4LogicalVolume *lensL;
   G4LogicalVolume *quadL;

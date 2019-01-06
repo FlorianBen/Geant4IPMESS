@@ -3,30 +3,28 @@
 
 #include <string>
 
-#include <G4GDMLParser.hh>
 #include <G4Box.hh>
+#include <G4GDMLParser.hh>
 #include <G4LogicalVolume.hh>
 #include <G4MultiUnion.hh>
 #include <G4NistManager.hh>
 #include <G4PVPlacement.hh>
 #include <G4Polycone.hh>
+#include <G4SDManager.hh>
 #include <G4SubtractionSolid.hh>
 #include <G4SystemOfUnits.hh>
 #include <G4Transform3D.hh>
 #include <G4Trd.hh>
 #include <G4Tubs.hh>
-#include <G4SDManager.hh>
 
 #include <CADMesh.hh>
 
 ESSDetectorConstruction::ESSDetectorConstruction()
-    : G4VUserDetectorConstruction()
-{
+    : G4VUserDetectorConstruction() {
   checkOverlaps = true;
 }
 
-ESSDetectorConstruction::~ESSDetectorConstruction()
-{
+ESSDetectorConstruction::~ESSDetectorConstruction() {
   delete mat_air;
   delete mat_copper;
   delete mat_gold;
@@ -35,8 +33,7 @@ ESSDetectorConstruction::~ESSDetectorConstruction()
   delete mat_vacuum;
 }
 
-G4VPhysicalVolume *ESSDetectorConstruction::Construct()
-{
+G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   ConstructMaterials();
   // World Creation
   // World parameters
@@ -71,6 +68,10 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
   auto solidPCB_HT = new G4Box("PCB", 1. * mm, 49. * mm, 49. * mm);
   ConstructIPM(solidFrame, solidPCB_BT, solidPCB_HT);
 
+  // MCP
+  auto solidMCP = ConstructSolidMCP();
+  ConstructMCP(solidMCP);
+
   // Vision System
   auto solidCam = ConstructSolidCamera();
   auto solidLens = ConstructSolidLens();
@@ -85,45 +86,40 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct()
   // LWU Support
   auto solidSupportLWU = ConstructSolidLWUSupport();
   ConstructLWUSupport(solidSupportLWU);
-  
-  //G4GDMLParser parser;
-  //parser.Write("out.gdml", worldPV);
+
+  // G4GDMLParser parser;
+  // parser.Write("out.gdml", worldPV);
   return worldPV;
 }
 
 void ESSDetectorConstruction::ConstructSDandField() {
   auto sdManager = G4SDManager::GetSDMpointer();
-  auto cameraSD = new ESSCameraSD("CamSD","CameraCollection");
+  auto cameraSD = new ESSCameraSD("CamSD", "CameraCollection");
   sdManager->AddNewDetector(cameraSD);
   quadL->SetSensitiveDetector(cameraSD);
 }
 
-void ESSDetectorConstruction::ConstructMaterials()
-{
+void ESSDetectorConstruction::ConstructMaterials() {
   auto nistManager = G4NistManager::Instance();
   mat_air = nistManager->FindOrBuildMaterial("G4_AIR");
   mat_copper = nistManager->FindOrBuildMaterial("G4_Cu");
   mat_gold = nistManager->FindOrBuildMaterial("G4_Au");
-  mat_macor = nullptr;
+  mat_macor = new G4Material("Macor", 2.52 * g / cm3, 6, kStateSolid);
+  mat_mcp_glass = new G4Material("MCP_glass", 4. * g / cm3, 9, kStateSolid);
   mat_steel = nistManager->FindOrBuildMaterial("G4_STAINLESS-STEEL");
 
   // Build materials for vacuum.
-  // Vacuum condition
+  // Vacuum condition (ESS condition)
   G4double density = (1e-12 / 1013.) * 27. * mg / cm3;
   G4double tempVacuum = 293. * kelvin;
   G4double presVacuum = 1.0e-12 * bar;
 
-  G4double a, z;
-  G4String symbol;
+  //G4String symbol;
   G4int nAtoms;
-  a = 1.01 * g / mole;
-  auto elH = new G4Element("Hydrogen", symbol = "H", z = 1., a);
-  a = 16.00 * g / mole;
-  auto elO = new G4Element("Oxygen", symbol = "O", z = 8., a);
-  a = 12.00 * g / mole;
-  auto elC = new G4Element("Carbon", symbol = "C", z = 6., a);
-  a = 14.00 * g / mole;
-  auto elN = new G4Element("Nitrogen", symbol = "N", z = 7., a);
+  auto elH = nistManager->FindOrBuildElement("H");//new G4Element("Hydrogen", symbol = "H", z = 1., a);
+  auto elO = nistManager->FindOrBuildElement("O");//new G4Element("Oxygen", symbol = "O", z = 8., a);
+  auto elC = nistManager->FindOrBuildElement("C");//new G4Element("Carbon", symbol = "C", z = 6., a);
+  auto elN = nistManager->FindOrBuildElement("N");//new G4Element("Nitrogen", symbol = "N", z = 7., a);
 
   auto dihydrogenGas = new G4Material("DiHydrogenGas", density, 1, kStateGas,
                                       tempVacuum, presVacuum);
@@ -150,23 +146,57 @@ void ESSDetectorConstruction::ConstructMaterials()
   mat_vacuum->AddMaterial(carbonicGas, 10. * perCent);
   mat_vacuum->AddMaterial(dicarbonicGas, 1. * perCent);
 
-  // Macor
+  // Macor (according to CORNING)
+  auto siliconDioxyde = nistManager->FindOrBuildMaterial("G4_SILICON_DIOXIDE");
+  auto magnesiumOxide = nistManager->FindOrBuildMaterial("G4_MAGNESIUM_OXIDE");
+  auto aluminiumOxide = nistManager->FindOrBuildMaterial("G4_ALUMINUM_OXIDE");
+  auto potassiumOxyde = nistManager->FindOrBuildMaterial("G4_POTASSIUM_OXIDE");
+  auto boronTrioxyde = nistManager->FindOrBuildMaterial("G4_BORON_OXIDE");
+  auto fluor = nistManager->FindOrBuildElement("F");
 
-  // Rogers PCB
+  mat_macor->AddMaterial(siliconDioxyde, 46 * perCent);
+  mat_macor->AddMaterial(magnesiumOxide, 17 * perCent);
+  mat_macor->AddMaterial(aluminiumOxide, 16 * perCent);
+  mat_macor->AddMaterial(potassiumOxyde, 10 * perCent);
+  mat_macor->AddMaterial(boronTrioxyde, 7 * perCent);
+  mat_macor->AddElement(fluor, 4. * perCent);
+
+  // Rogers PCB (RO4350 composition seems to be secret) -> kind of PTFE ?
+  mat_pcb = nistManager->FindOrBuildMaterial("G4_TEFLON");
+
+  // MCP glass (according to Photonis)
+  auto elPb = nistManager->FindOrBuildElement("Pb");
+  auto elSi = nistManager->FindOrBuildElement("Si");
+  auto elK = nistManager->FindOrBuildElement("K");
+  auto elRb = nistManager->FindOrBuildElement("Rb");
+  auto elBa = nistManager->FindOrBuildElement("Ba");
+  auto elAs = nistManager->FindOrBuildElement("As");
+  auto elCs = nistManager->FindOrBuildElement("Cs");
+  auto elNa = nistManager->FindOrBuildElement("Na");
+
+  G4double fracMass;
+  mat_mcp_glass->AddElement(elPb, 48 * perCent);
+  mat_mcp_glass->AddElement(elO, 25.8 * perCent);
+  mat_mcp_glass->AddElement(elSi, 18.2 * perCent);
+  mat_mcp_glass->AddElement(elK, 4.2 * perCent);
+  mat_mcp_glass->AddElement(elRb, 1.8 * perCent);
+  mat_mcp_glass->AddElement(elBa, 1.3 * perCent);
+  mat_mcp_glass->AddElement(elAs, 0.4 * perCent);
+  mat_mcp_glass->AddElement(elCs, 0.2 * perCent);
+  mat_mcp_glass->AddElement(elNa, fracMass = 0.1 * perCent);
 }
 
-G4VSolid *ESSDetectorConstruction::ConstructSolidOuterLWU()
-{
+G4VSolid *ESSDetectorConstruction::ConstructSolidOuterLWU() {
   // LWU Creation
   G4double phiS = 0. * degree;
   G4double phiT = 360. * degree;
   G4double zplanes = 6;
   // Outer shapes
   G4double rIOuter[]{0 * cm, 0 * cm, 0 * cm, 0 * cm, 0 * cm, 0. * cm};
-  G4double rOuter[]{55. * mm, 55. * mm, 130. * mm,
+  G4double rOuter[]{55. * mm,  55. * mm, 130. * mm,
                     130. * mm, 55. * mm, 55. * mm};
-  G4double zplaneOuter[]{-285. * mm, -2 * mm, 0. * cm,
-                         457 * mm, 457 * mm, 1050 * mm};
+  G4double zplaneOuter[]{-285. * mm, -2 * mm,  0. * cm,
+                         457 * mm,   457 * mm, 1050 * mm};
   auto pipeOuterBeamPoly = new G4Polycone("PolyChamber", phiS, phiT, zplanes,
                                           zplaneOuter, rIOuter, rOuter);
   auto wireScannerOuterBox =
@@ -208,8 +238,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidOuterLWU()
   return unionOuter;
 }
 
-G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU()
-{
+G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU() {
   // LWU Creation
   G4double phiS = 0. * degree;
   G4double phiT = 360. * degree;
@@ -217,8 +246,8 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU()
   // Inner shapes
   G4double rIInner[]{0 * cm, 0 * cm, 0 * cm, 0 * cm, 0 * cm, 0. * cm};
   G4double rInner[]{50 * mm, 50 * mm, 125 * mm, 125 * mm, 50 * mm, 50 * mm};
-  G4double zplaneInner[]{-280. * mm, 0 * mm, 0. * cm,
-                         455 * mm, 455 * mm, 1045 * mm};
+  G4double zplaneInner[]{-280. * mm, 0 * mm,   0. * cm,
+                         455 * mm,   455 * mm, 1045 * mm};
   auto pipeInnerBeamPoly = new G4Polycone("PolyVacuum", phiS, phiT, zplanes,
                                           zplaneInner, rIInner, rInner);
   auto wireScannerInnerBox =
@@ -259,8 +288,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU()
   return unionInner;
 }
 
-G4VSolid *ESSDetectorConstruction::ConstructSolidFrame()
-{
+G4VSolid *ESSDetectorConstruction::ConstructSolidFrame() {
   auto meshIPM = CADMesh::TessellatedMesh::FromSTL(
       "IPM/out_Part__Feature001_cadre_V20001.stl");
   meshIPM->SetScale(m);
@@ -270,8 +298,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidFrame()
   return meshIPM->GetSolid();
 }
 
-G4VSolid *ESSDetectorConstruction::ConstructSolidPCB()
-{
+G4VSolid *ESSDetectorConstruction::ConstructSolidPCB() {
   auto meshPCBBT = CADMesh::TessellatedMesh::FromSTL(
       "IPM/out_Part__Feature035_Plaque_BT0035.stl");
   meshPCBBT->SetScale(mm);
@@ -281,15 +308,23 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidPCB()
   return meshPCBBT->GetSolid();
 }
 
-G4VSolid *ESSDetectorConstruction::ConstructSolidDisk()
-{
+G4VSolid *ESSDetectorConstruction::ConstructSolidMCP() {
+  auto meshMCP = CADMesh::TessellatedMesh::FromSTL(
+      "MCP/out_Part__Feature007_A171D0007.stl");
+  meshMCP->SetScale(mm);
+  meshMCP->SetReverse(false);
+  // meshMCP->SetOffset(
+  //    G4ThreeVector(-1.12595 * mm, -916.165 * mm, -311.819 * mm));
+  return meshMCP->GetSolid();
+}
+
+G4VSolid *ESSDetectorConstruction::ConstructSolidDisk() {
   G4double phiS = 0. * degree;
   G4double phiT = 360. * degree;
   return new G4Tubs("PolyDisk", 50.0 * mm, 123.0 * mm, 0.5 * mm, phiS, phiT);
 }
 
-G4VSolid *ESSDetectorConstruction::ConstructSolidCamera()
-{
+G4VSolid *ESSDetectorConstruction::ConstructSolidCamera() {
   auto solidCam =
       CADMesh::TessellatedMesh::FromSTL("Camera/out_FL2-016-R0.stl");
   solidCam->SetScale(mm);
@@ -297,16 +332,14 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidCamera()
   return solidCam->GetSolid();
 }
 
-G4VSolid *ESSDetectorConstruction::ConstructSolidLens()
-{
+G4VSolid *ESSDetectorConstruction::ConstructSolidLens() {
   auto solidLens = CADMesh::TessellatedMesh::FromSTL("Lens/out_21912E0W.stl");
   solidLens->SetScale(mm);
   solidLens->SetReverse(false);
   return solidLens->GetSolid();
 }
 
-G4VSolid *ESSDetectorConstruction::ConstructSolidQuad()
-{
+G4VSolid *ESSDetectorConstruction::ConstructSolidQuad() {
   auto solidQuad = CADMesh::TessellatedMesh::FromSTL(
       "LWU_E_type1/outPart__Feature460_SOLID0460.stl");
   solidQuad->SetScale(mm);
@@ -315,8 +348,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidQuad()
   return solidQuad->GetSolid();
 }
 
-G4VSolid *ESSDetectorConstruction::ConstructSolidQuadSupport()
-{
+G4VSolid *ESSDetectorConstruction::ConstructSolidQuadSupport() {
   auto solidQuadSupport = CADMesh::TessellatedMesh::FromSTL(
       "LWU_E_type1/outPart__Feature451_SOLID0451.stl");
   solidQuadSupport->SetScale(mm);
@@ -325,8 +357,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidQuadSupport()
   return solidQuadSupport->GetSolid();
 }
 
-G4VSolid *ESSDetectorConstruction::ConstructSolidLWUSupport()
-{
+G4VSolid *ESSDetectorConstruction::ConstructSolidLWUSupport() {
   auto supportL1 = new G4Box("Support", 110. * mm, 110. * mm, 770. * mm);
   auto supportL2 = new G4Box("Support", 45. * mm, 90. * mm, 780. * mm);
   auto solidL = new G4SubtractionSolid("SupportLWU_L", supportL1, supportL2);
@@ -334,10 +365,14 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidLWUSupport()
   auto supportT2 = new G4Box("Support", 160. * mm, 90. * mm, 45. * mm);
   auto solidT = new G4SubtractionSolid("SupportLWU_T", supportT1, supportT2);
 
-  auto transL1 = G4Transform3D(G4RotationMatrix(), G4ThreeVector(.0 * mm, .0 * mm, .0 * mm));
-  auto transL2 = G4Transform3D(G4RotationMatrix(), G4ThreeVector(-430.0 * mm, .0 * mm, .0 * mm));
-  auto transT1 = G4Transform3D(G4RotationMatrix(), G4ThreeVector(-210 * mm, .0 * mm, 553.0 * mm));
-  auto transT2 = G4Transform3D(G4RotationMatrix(), G4ThreeVector(-210 * mm, .0 * mm, -553.0 * mm));
+  auto transL1 = G4Transform3D(G4RotationMatrix(),
+                               G4ThreeVector(.0 * mm, .0 * mm, .0 * mm));
+  auto transL2 = G4Transform3D(G4RotationMatrix(),
+                               G4ThreeVector(-430.0 * mm, .0 * mm, .0 * mm));
+  auto transT1 = G4Transform3D(G4RotationMatrix(),
+                               G4ThreeVector(-210 * mm, .0 * mm, 553.0 * mm));
+  auto transT2 = G4Transform3D(G4RotationMatrix(),
+                               G4ThreeVector(-210 * mm, .0 * mm, -553.0 * mm));
 
   G4MultiUnion *unionSolid = new G4MultiUnion("UnionSupportLWU");
   unionSolid->AddNode(*solidL, transL1);
@@ -345,7 +380,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidLWUSupport()
   unionSolid->AddNode(*solidT, transT1);
   unionSolid->AddNode(*solidT, transT2);
   unionSolid->Voxelize();
-    /*
+  /*
   auto offsetsupport1 = G4ThreeVector(720 * mm, -215 * mm, 510 * mm);
   auto rotSupport = new G4RotationMatrix();
   CADMesh *meshSupport1 =
@@ -369,8 +404,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidLWUSupport()
 }
 
 void ESSDetectorConstruction::ConstructLWU(G4VSolid *solidOuter,
-                                           G4VSolid *solidInner)
-{
+                                           G4VSolid *solidInner) {
   pipeL = new G4LogicalVolume(solidOuter, mat_steel, "PolyChamberOuterL");
 
   new G4PVPlacement(0, G4ThreeVector(0, 0, 0 * mm), pipeL, "PipeOuter", worldL,
@@ -382,8 +416,7 @@ void ESSDetectorConstruction::ConstructLWU(G4VSolid *solidOuter,
                     false, 0, checkOverlaps);
 }
 
-void ESSDetectorConstruction::ConstructDisk(G4VSolid *solidDisk)
-{
+void ESSDetectorConstruction::ConstructDisk(G4VSolid *solidDisk) {
   diskL = new G4LogicalVolume(solidDisk, mat_steel, "DiskL");
   new G4PVPlacement(0, G4ThreeVector(.0, .0, 122 * mm), diskL, "Disk1", vacuumL,
                     false, 0, checkOverlaps);
@@ -393,11 +426,10 @@ void ESSDetectorConstruction::ConstructDisk(G4VSolid *solidDisk)
 
 void ESSDetectorConstruction::ConstructIPM(G4VSolid *solidFrame,
                                            G4VSolid *solidPCB_BT,
-                                           G4VSolid *solidPCB_HT)
-{
-  CIPML = new G4LogicalVolume(solidFrame, mat_steel, "IPML");
-  PCB_BTL = new G4LogicalVolume(solidPCB_BT, mat_steel, "PCBBTL");
-  PCB_HTL = new G4LogicalVolume(solidPCB_HT, mat_steel, "PCBL");
+                                           G4VSolid *solidPCB_HT) {
+  CIPML = new G4LogicalVolume(solidFrame, mat_macor, "IPML");
+  PCB_BTL = new G4LogicalVolume(solidPCB_BT, mat_pcb, "PCBBTL");
+  PCB_HTL = new G4LogicalVolume(solidPCB_HT, mat_pcb, "PCBL");
   auto rotPCB = new G4RotationMatrix();
 
   rotPCB->rotateZ(90. * deg);
@@ -457,9 +489,18 @@ void ESSDetectorConstruction::ConstructIPM(G4VSolid *solidFrame,
                     vacuumL, false, 1, checkOverlaps);
 }
 
+void ESSDetectorConstruction::ConstructMCP(G4VSolid *solidMCP,
+                                           G4VSolid *solidPhos,
+                                           G4VSolid *solidFrame) {
+  mcpL = new G4LogicalVolume(solidMCP, mat_copper, "MCPL");
+  new G4PVPlacement(nullptr, G4ThreeVector(0. * mm, .0 * mm, 206 * mm), mcpL,
+                    "MCP1", vacuumL, false, 0, checkOverlaps);
+  new G4PVPlacement(nullptr, G4ThreeVector(0. * mm, .0 * mm, 372 * mm), mcpL,
+                    "MCP2", vacuumL, false, 1, checkOverlaps);
+}
+
 void ESSDetectorConstruction::ConstructVisionS(G4VSolid *solidCam,
-                                               G4VSolid *solidLens)
-{
+                                               G4VSolid *solidLens) {
   auto rotCam1 = new G4RotationMatrix();
   rotCam1->rotateY(90. * deg);
   camL = new G4LogicalVolume(solidCam, mat_steel, "CameraL");
@@ -477,14 +518,12 @@ void ESSDetectorConstruction::ConstructVisionS(G4VSolid *solidCam,
                     "Lens2", worldL, false, 1, checkOverlaps);
 }
 
-void ESSDetectorConstruction::ConstructQuad(G4VSolid *solidQuad)
-{
+void ESSDetectorConstruction::ConstructQuad(G4VSolid *solidQuad) {
   auto rotQuad = new G4RotationMatrix();
   rotQuad->rotateY(90 * deg);
   quadL = new G4LogicalVolume(solidQuad, mat_copper, "QuadL");
   G4double z = -175;
-  for (auto i = 0; i < 8; i++)
-  {
+  for (auto i = 0; i < 8; i++) {
     if (i > 3)
       z = 905;
     new G4PVPlacement(
@@ -494,8 +533,7 @@ void ESSDetectorConstruction::ConstructQuad(G4VSolid *solidQuad)
   }
 }
 
-void ESSDetectorConstruction::ConstructQuadSupport(G4VSolid *solidQuadSupport)
-{
+void ESSDetectorConstruction::ConstructQuadSupport(G4VSolid *solidQuadSupport) {
   auto rotQuadSupport = new G4RotationMatrix();
   quad_SupportL =
       new G4LogicalVolume(solidQuadSupport, mat_steel, "QuadSupportL");
@@ -510,9 +548,8 @@ void ESSDetectorConstruction::ConstructQuadSupport(G4VSolid *solidQuadSupport)
                     checkOverlaps);
 }
 
-void ESSDetectorConstruction::ConstructLWUSupport(G4VSolid* solidSupportLWU){
+void ESSDetectorConstruction::ConstructLWUSupport(G4VSolid *solidSupportLWU) {
   LWU_SupportL = new G4LogicalVolume(solidSupportLWU, mat_steel, "SupportL");
-  new G4PVPlacement(nullptr,
-                    G4ThreeVector(230. * mm, -510. * mm, 348.6 * mm), LWU_SupportL,
-                    "Support", worldL, false, 0, checkOverlaps);
+  new G4PVPlacement(nullptr, G4ThreeVector(230. * mm, -510. * mm, 348.6 * mm),
+                    LWU_SupportL, "Support", worldL, false, 0, checkOverlaps);
 }
