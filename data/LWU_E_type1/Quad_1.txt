@@ -1,0 +1,4 @@
+Part__Feature460 -> SOLID
+Placement [Pos=(540,0,0), Yaw-Pitch-Roll=(90,0,90)]
+Placement [Pos=(540,0,0), Yaw-Pitch-Roll=(90,0,90)]
+BoundBox (370.2, -227.287, 2.25134, 709.8, -2.25135, 227.287)

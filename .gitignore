@@ -42,5 +42,9 @@ build/*
 # ccls
 .ccls-cache/*
 
+# stl file (TEMP)
+data/**/out*.stl
+data/**/out*.txt
+
 # VSCode
 .vscode/*

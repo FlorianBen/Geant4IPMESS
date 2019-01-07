@@ -1,0 +1,4 @@
+Part__Feature035 -> Plaque_BT
+Placement [Pos=(1.12595,916.165,311.819), Yaw-Pitch-Roll=(90,0,0)]
+Placement [Pos=(1.12595,916.165,311.819), Yaw-Pitch-Roll=(90,0,0)]
+BoundBox (-48.8741, 866.165, 311.819, 51.1259, 966.165, 313.819)

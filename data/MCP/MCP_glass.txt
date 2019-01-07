@@ -1,0 +1,4 @@
+Part__Feature007 -> A171D
+Placement [Pos=(0,0,0), Yaw-Pitch-Roll=(0,0,0)]
+Placement [Pos=(0,0,0), Yaw-Pitch-Roll=(0,0,0)]
+BoundBox (-21.6449, 8.08, -22.005, 21.6449, 8.08, 22.005)

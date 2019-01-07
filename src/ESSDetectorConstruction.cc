@@ -290,7 +290,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU() {
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidFrame() {
   auto meshIPM = CADMesh::TessellatedMesh::FromSTL(
-      "IPM/out_Part__Feature001_cadre_V20001.stl");
+      "IPM/Frame.stl");
   meshIPM->SetScale(m);
   meshIPM->SetReverse(false);
   meshIPM->SetOffset(
@@ -300,7 +300,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidFrame() {
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidPCB() {
   auto meshPCBBT = CADMesh::TessellatedMesh::FromSTL(
-      "IPM/out_Part__Feature035_Plaque_BT0035.stl");
+      "IPM/Plaque_BT.stl");
   meshPCBBT->SetScale(mm);
   meshPCBBT->SetReverse(false);
   meshPCBBT->SetOffset(
@@ -310,7 +310,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidPCB() {
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidMCP() {
   auto meshMCP = CADMesh::TessellatedMesh::FromSTL(
-      "MCP/out_Part__Feature007_A171D0007.stl");
+      "MCP/MCP_glass.stl");
   meshMCP->SetScale(mm);
   meshMCP->SetReverse(false);
   // meshMCP->SetOffset(
@@ -326,14 +326,14 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidDisk() {
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidCamera() {
   auto solidCam =
-      CADMesh::TessellatedMesh::FromSTL("Camera/out_FL2-016-R0.stl");
+      CADMesh::TessellatedMesh::FromSTL("Camera/Camera.stl");
   solidCam->SetScale(mm);
   solidCam->SetReverse(false);
   return solidCam->GetSolid();
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidLens() {
-  auto solidLens = CADMesh::TessellatedMesh::FromSTL("Lens/out_21912E0W.stl");
+  auto solidLens = CADMesh::TessellatedMesh::FromSTL("Lens/Lens.stl");
   solidLens->SetScale(mm);
   solidLens->SetReverse(false);
   return solidLens->GetSolid();
@@ -341,7 +341,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidLens() {
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidQuad() {
   auto solidQuad = CADMesh::TessellatedMesh::FromSTL(
-      "LWU_E_type1/outPart__Feature460_SOLID0460.stl");
+      "LWU_E_type1/Quad_1.stl");
   solidQuad->SetScale(mm);
   solidQuad->SetReverse(false);
   solidQuad->SetOffset(G4ThreeVector(-540 * mm, .0 * mm, 0.0 * mm));
@@ -350,7 +350,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidQuad() {
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidQuadSupport() {
   auto solidQuadSupport = CADMesh::TessellatedMesh::FromSTL(
-      "LWU_E_type1/outPart__Feature451_SOLID0451.stl");
+      "LWU_E_type1/Quad_Support_1.stl");
   solidQuadSupport->SetScale(mm);
   solidQuadSupport->SetReverse(false);
   solidQuadSupport->SetOffset(G4ThreeVector(540 * mm, 0 * mm, 0 * mm));
