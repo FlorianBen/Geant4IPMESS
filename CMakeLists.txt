@@ -20,6 +20,8 @@ include_directories(${CADMESH_INCLUDE_DIRS})
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(Geant4ESS_inc
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSConstants.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSSensorParameterisation.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSAnalysis.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSEventAction.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSDetectorConstruction.hh
@@ -33,6 +35,7 @@ set(Geant4ESS_inc
 
 set(Geant4ESS_src
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSEventAction.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSSensorParameterisation.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSDetectorConstruction.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSActionInitialization.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSPrimaryGeneratorAction.cc

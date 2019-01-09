@@ -101,10 +101,10 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
 }
 
 void ESSDetectorConstruction::ConstructSDandField() {
-  /*   auto sdManager = G4SDManager::GetSDMpointer();
+    auto sdManager = G4SDManager::GetSDMpointer();
     auto cameraSD = new ESSCameraSD("CamSD", "CameraCollection");
     sdManager->AddNewDetector(cameraSD);
-    quadL->SetSensitiveDetector(cameraSD); */
+    pixelCellsL->SetSensitiveDetector(cameraSD);
 }
 
 void ESSDetectorConstruction::ConstructMaterials() {
@@ -575,6 +575,7 @@ void ESSDetectorConstruction::ConstructVisionS(G4VSolid *solidCam,
                     "Lens2", worldL, false, 1, checkOverlaps);
 
   // Pixels
+  // TODO: Parametrisation
   auto solidPixelRows = new G4Box("SolidPixelRows", size_pixel / 2,
                                   ny_pixels * size_pixel / 2, thickness_sensor);
   auto solidPixelCells = new G4Box("SolidPixelCells", size_pixel / 2,

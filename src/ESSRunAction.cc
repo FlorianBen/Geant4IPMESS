@@ -1,6 +1,6 @@
-#include "ESSAnalysis.hh"
 #include "ESSRunAction.hh"
-
+#include "ESSAnalysis.hh"
+#include "ESSConstants.hh"
 
 #include <G4Run.hh>
 #include <G4SystemOfUnits.hh>
@@ -15,14 +15,16 @@ ESSRunAction::ESSRunAction() : G4UserRunAction() {
          << G4endl;
 
   // Creating histograms
-  for (G4int i = 0; i < 8; ++i) {
+  for (G4int i = 0; i < 2; ++i) {
     std::ostringstream os;
     os << i;
     G4String hname = "Camera";
     hname += os.str();
     G4String htitle = "Edep [MeV] in Camera";
     htitle += os.str();
-    analysisManager->CreateH1(hname, htitle, 200, 0., 3);
+    analysisManager->CreateH2(hname, htitle, kNofSensorColumns, 0,
+                              kNofSensorColumns - 1, kNofSensorRows, 0,
+                              kNofSensorRows - 1);//, "x (pixels)", "y (pixels)");
   }
 }
 

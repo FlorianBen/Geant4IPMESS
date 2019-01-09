@@ -1,3 +1,4 @@
+#include "ESSConstants.hh"
 #include "ESSCameraSD.hh"
 #include "ESSAnalysis.hh"
 
@@ -23,14 +24,14 @@ void ESSCameraSD::Initialize(G4HCofThisEvent *hce) {
   // Add this collection in hce
   G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
   hce->AddHitsCollection(hcID, fHitsCollection);
-  for (auto i = 0; i < 8; i++) {
+  for (auto i = 0; i < kNofPixels; i++) {
     auto hit = new ESSCameraHit();
     hit->SetCamNumber(i);
     fHitsCollection->insert(hit);
   }
 }
 
-G4bool ESSCameraSD::ProcessHits(G4Step *step, G4TouchableHistory *history) {
+G4bool ESSCameraSD::ProcessHits(G4Step *step, G4TouchableHistory *) {
   // energy deposit
   G4double edep = step->GetTotalEnergyDeposit();
   if (edep == 0.)
@@ -38,16 +39,19 @@ G4bool ESSCameraSD::ProcessHits(G4Step *step, G4TouchableHistory *history) {
 
   const G4VTouchable *touchable = step->GetPreStepPoint()->GetTouchable();
   G4VPhysicalVolume *layerPV = touchable->GetVolume();
-  G4int layerNumber = layerPV->GetCopyNo();
 
-  auto hit = (*fHitsCollection)[layerNumber];
+  G4int cameraNumber = touchable->GetCopyNumber(2);
+  G4int columnNumber = touchable->GetCopyNumber(1);
+  G4int pixelNumber = layerPV->GetCopyNo();
+
+  auto hit = (*fHitsCollection)[pixelNumber];
 
   // Add values
   hit->AddEdep(edep);
-  hit->SetCamNumber(layerNumber);
+  hit->SetCamNumber(pixelNumber);
 
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
-  analysisManager->FillH1(hit->GetCamNumber(), edep / MeV);
-
+  //analysisManager->FillH1(hit->GetCamNumber(), edep / MeV);
+  analysisManager->FillH2(cameraNumber,columnNumber,pixelNumber,edep / MeV);
   return true;
 }

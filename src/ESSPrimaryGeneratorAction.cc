@@ -48,8 +48,8 @@ void ESSPrimaryGeneratorAction::GeneratePrimaries(G4Event *event) {
 
   // Define particle properties
   G4String particleName = "proton";
-  G4ThreeVector position(0, 0, -0.25 * m);
-  G4ThreeVector momentum(100 * MeV, 260 * MeV, 2* GeV);
+  G4ThreeVector position(0, 0, 0.206 * m);
+  G4ThreeVector momentum(2 * GeV, 0 * MeV, 0* GeV);
   G4double time = 0;
 
   // Get particle definition from G4ParticleTable
