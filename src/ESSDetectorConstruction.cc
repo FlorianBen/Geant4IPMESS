@@ -9,6 +9,7 @@
 #include <G4MultiUnion.hh>
 #include <G4NistManager.hh>
 #include <G4PVPlacement.hh>
+#include <G4PVReplica.hh>
 #include <G4Polycone.hh>
 #include <G4SDManager.hh>
 #include <G4SubtractionSolid.hh>
@@ -22,6 +23,10 @@
 ESSDetectorConstruction::ESSDetectorConstruction()
     : G4VUserDetectorConstruction() {
   checkOverlaps = true;
+  size_pixel = 120 * um;
+  thickness_sensor = 100 * um;
+  nx_pixels = 97;
+  ny_pixels = 61;
 }
 
 ESSDetectorConstruction::~ESSDetectorConstruction() {
@@ -75,13 +80,14 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   // Vision System
   auto solidCam = ConstructSolidCamera();
   auto solidLens = ConstructSolidLens();
-  ConstructVisionS(solidCam, solidLens);
+  auto solidSensor = ConstructSolidSensor();
+  ConstructVisionS(solidCam, solidLens, solidSensor);
 
   // Quads
-  auto solidQuad = ConstructSolidQuad();
-  ConstructQuad(solidQuad);
-  auto solidQuadSupport = ConstructSolidQuadSupport();
-  ConstructQuadSupport(solidQuadSupport);
+  // auto solidQuad = ConstructSolidQuad();
+  // ConstructQuad(solidQuad);
+  // auto solidQuadSupport = ConstructSolidQuadSupport();
+  // ConstructQuadSupport(solidQuadSupport);
 
   // LWU Support
   auto solidSupportLWU = ConstructSolidLWUSupport();
@@ -93,10 +99,10 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
 }
 
 void ESSDetectorConstruction::ConstructSDandField() {
-  auto sdManager = G4SDManager::GetSDMpointer();
-  auto cameraSD = new ESSCameraSD("CamSD", "CameraCollection");
-  sdManager->AddNewDetector(cameraSD);
-  quadL->SetSensitiveDetector(cameraSD);
+  /*   auto sdManager = G4SDManager::GetSDMpointer();
+    auto cameraSD = new ESSCameraSD("CamSD", "CameraCollection");
+    sdManager->AddNewDetector(cameraSD);
+    quadL->SetSensitiveDetector(cameraSD); */
 }
 
 void ESSDetectorConstruction::ConstructMaterials() {
@@ -114,12 +120,16 @@ void ESSDetectorConstruction::ConstructMaterials() {
   G4double tempVacuum = 293. * kelvin;
   G4double presVacuum = 1.0e-12 * bar;
 
-  //G4String symbol;
+  // G4String symbol;
   G4int nAtoms;
-  auto elH = nistManager->FindOrBuildElement("H");//new G4Element("Hydrogen", symbol = "H", z = 1., a);
-  auto elO = nistManager->FindOrBuildElement("O");//new G4Element("Oxygen", symbol = "O", z = 8., a);
-  auto elC = nistManager->FindOrBuildElement("C");//new G4Element("Carbon", symbol = "C", z = 6., a);
-  auto elN = nistManager->FindOrBuildElement("N");//new G4Element("Nitrogen", symbol = "N", z = 7., a);
+  auto elH = nistManager->FindOrBuildElement(
+      "H"); // new G4Element("Hydrogen", symbol = "H", z = 1., a);
+  auto elO = nistManager->FindOrBuildElement(
+      "O"); // new G4Element("Oxygen", symbol = "O", z = 8., a);
+  auto elC = nistManager->FindOrBuildElement(
+      "C"); // new G4Element("Carbon", symbol = "C", z = 6., a);
+  auto elN = nistManager->FindOrBuildElement(
+      "N"); // new G4Element("Nitrogen", symbol = "N", z = 7., a);
 
   auto dihydrogenGas = new G4Material("DiHydrogenGas", density, 1, kStateGas,
                                       tempVacuum, presVacuum);
@@ -289,8 +299,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU() {
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidFrame() {
-  auto meshIPM = CADMesh::TessellatedMesh::FromSTL(
-      "IPM/Frame.stl");
+  auto meshIPM = CADMesh::TessellatedMesh::FromSTL("IPM/Frame.stl");
   meshIPM->SetScale(m);
   meshIPM->SetReverse(false);
   meshIPM->SetOffset(
@@ -299,8 +308,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidFrame() {
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidPCB() {
-  auto meshPCBBT = CADMesh::TessellatedMesh::FromSTL(
-      "IPM/Plaque_BT.stl");
+  auto meshPCBBT = CADMesh::TessellatedMesh::FromSTL("IPM/Plaque_BT.stl");
   meshPCBBT->SetScale(mm);
   meshPCBBT->SetReverse(false);
   meshPCBBT->SetOffset(
@@ -309,8 +317,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidPCB() {
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidMCP() {
-  auto meshMCP = CADMesh::TessellatedMesh::FromSTL(
-      "MCP/MCP_glass.stl");
+  auto meshMCP = CADMesh::TessellatedMesh::FromSTL("MCP/MCP_glass.stl");
   meshMCP->SetScale(mm);
   meshMCP->SetReverse(false);
   // meshMCP->SetOffset(
@@ -325,11 +332,16 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidDisk() {
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidCamera() {
-  auto solidCam =
-      CADMesh::TessellatedMesh::FromSTL("Camera/Camera.stl");
+  auto solidCam = CADMesh::TessellatedMesh::FromSTL("Camera/Camera.stl");
   solidCam->SetScale(mm);
   solidCam->SetReverse(false);
   return solidCam->GetSolid();
+}
+
+G4VSolid *ESSDetectorConstruction::ConstructSolidSensor() {
+  auto sensorBox = new G4Box("boxSensor", nx_pixels * size_pixel / 2,
+                             ny_pixels * size_pixel / 2, thickness_sensor);
+  return sensorBox;
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidLens() {
@@ -340,8 +352,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidLens() {
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidQuad() {
-  auto solidQuad = CADMesh::TessellatedMesh::FromSTL(
-      "LWU_E_type1/Quad_1.stl");
+  auto solidQuad = CADMesh::TessellatedMesh::FromSTL("LWU_E_type1/Quad_1.stl");
   solidQuad->SetScale(mm);
   solidQuad->SetReverse(false);
   solidQuad->SetOffset(G4ThreeVector(-540 * mm, .0 * mm, 0.0 * mm));
@@ -349,8 +360,8 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidQuad() {
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidQuadSupport() {
-  auto solidQuadSupport = CADMesh::TessellatedMesh::FromSTL(
-      "LWU_E_type1/Quad_Support_1.stl");
+  auto solidQuadSupport =
+      CADMesh::TessellatedMesh::FromSTL("LWU_E_type1/Quad_Support_1.stl");
   solidQuadSupport->SetScale(mm);
   solidQuadSupport->SetReverse(false);
   solidQuadSupport->SetOffset(G4ThreeVector(540 * mm, 0 * mm, 0 * mm));
@@ -500,14 +511,20 @@ void ESSDetectorConstruction::ConstructMCP(G4VSolid *solidMCP,
 }
 
 void ESSDetectorConstruction::ConstructVisionS(G4VSolid *solidCam,
-                                               G4VSolid *solidLens) {
+                                               G4VSolid *solidLens,
+                                               G4VSolid *solidSensor) {
   auto rotCam1 = new G4RotationMatrix();
   rotCam1->rotateY(90. * deg);
+  rotCam1->rotateZ(90. * deg);
+
   camL = new G4LogicalVolume(solidCam, mat_steel, "CameraL");
   lensL = new G4LogicalVolume(solidLens, mat_steel, "LensL");
+  sensorL = new G4LogicalVolume(solidSensor, mat_mcp_glass, "SensorL");
 
   new G4PVPlacement(rotCam1, G4ThreeVector(350. * mm, .0 * mm, 206 * mm), camL,
                     "Cam1", worldL, false, 0, checkOverlaps);
+  new G4PVPlacement(nullptr, G4ThreeVector(-3. * mm, .0 * mm, 0 * mm), sensorL,
+                    "Sensor1", camL, false, 0, checkOverlaps);
   new G4PVPlacement(rotCam1, G4ThreeVector(290. * mm, .0 * mm, 206 * mm), lensL,
                     "Lens1", worldL, false, 0, checkOverlaps);
   auto rotCam2 = new G4RotationMatrix();
@@ -516,6 +533,22 @@ void ESSDetectorConstruction::ConstructVisionS(G4VSolid *solidCam,
                     "Cam2", worldL, false, 1, checkOverlaps);
   new G4PVPlacement(rotCam2, G4ThreeVector(.0 * mm, 290. * mm, 372 * mm), lensL,
                     "Lens2", worldL, false, 1, checkOverlaps);
+
+  // Pixels
+  auto solidPixelRows = new G4Box("SolidPixelRows", size_pixel / 2,
+                                  ny_pixels * size_pixel / 2, thickness_sensor);
+  auto solidPixelCells = new G4Box("SolidPixelCells", size_pixel / 2,
+                                   size_pixel / 2, thickness_sensor);
+
+  pixelRowsL = new G4LogicalVolume(solidPixelRows, mat_mcp_glass, "PixelRowsL");
+  pixelCellsL =
+      new G4LogicalVolume(solidPixelCells, mat_mcp_glass, "PixelCellsL");
+
+  new G4PVReplica("PixelRows", pixelRowsL, sensorL, kXAxis, nx_pixels,
+                  size_pixel);
+
+  new G4PVReplica("PixelCells", pixelCellsL, pixelRowsL, kYAxis, ny_pixels,
+                  size_pixel);
 }
 
 void ESSDetectorConstruction::ConstructQuad(G4VSolid *solidQuad) {

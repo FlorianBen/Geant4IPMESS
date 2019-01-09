@@ -67,6 +67,10 @@ protected:
    */
   G4VSolid *ConstructSolidCamera();
   /**
+   * Construck Sensor solid.
+   */
+  G4VSolid *ConstructSolidSensor();
+  /**
    * Construck Lens solid.
    */
   G4VSolid *ConstructSolidLens();
@@ -109,7 +113,7 @@ protected:
   /**
    * Placement of camera + lens.
    */
-  void ConstructVisionS(G4VSolid *solidCam, G4VSolid *solidLens);
+  void ConstructVisionS(G4VSolid *solidCam, G4VSolid *solidLens, G4VSolid *solidSensor);
   /**
    * Placement of IPMS.
    */
@@ -156,10 +160,18 @@ private:
   G4LogicalVolume *PCB_HTL;
   G4LogicalVolume *mcpL;
   G4LogicalVolume *camL;
+  G4LogicalVolume *sensorL;
+  G4LogicalVolume *pixelRowsL;
+  G4LogicalVolume *pixelCellsL;
   G4LogicalVolume *lensL;
   G4LogicalVolume *quadL;
   G4LogicalVolume *quad_SupportL;
   G4LogicalVolume *LWU_SupportL;
+
+  G4int nx_pixels;
+  G4int ny_pixels;
+  G4double size_pixel;
+  G4double thickness_sensor;
 };
 
 #endif
