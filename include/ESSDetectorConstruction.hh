@@ -64,33 +64,37 @@ protected:
    */
   G4VSolid *ConstructSolidDisk();
   /**
-   * Construck Camera solid.
+   * Construct Camera solid.
    */
   G4VSolid *ConstructSolidCamera();
   /**
-   * Construck Sensor solid.
+   * Construct Sensor solid.
    */
   G4VSolid *ConstructSolidSensor();
   /**
-   * Construck Lens solid.
+   * Construct Lens solid.
    */
   G4VSolid *ConstructSolidLens();
   /**
-   * Construck IPM Frame solid.
+   * Construct IPM Frame solid.
    */
   G4VSolid *ConstructSolidFrame();
   /**
-   * Construck IPM PCB solid.
+   * Construct IPM PCB solid.
    */
   G4VSolid *ConstructSolidPCB();
   /**
-   * Construck IPM MCP solid.
+   * Construct IPM MCP solid.
    */
   G4VSolid *ConstructSolidMCP();
   /**
-   * Construck IPM Phosphor solid.
+   * Construct IPM Phosphor solid.
    */
   G4VSolid *ConstructSolidPhos();
+  /**
+   * Construct IPM MCP frame solid.
+   */
+  G4VSolid *ConstructSolidFrameMCP();
   /**
    * Construct Quadrupole solid.
    */
@@ -161,6 +165,8 @@ private:
   G4LogicalVolume *PCB_BTL;
   G4LogicalVolume *PCB_HTL;
   G4LogicalVolume *mcpL;
+  G4LogicalVolume *phosL;
+  G4LogicalVolume *mcp_frameL;
   G4LogicalVolume *camL;
   G4LogicalVolume *sensorL;
   G4LogicalVolume *pixelRowsL;

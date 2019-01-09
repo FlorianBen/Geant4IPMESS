@@ -34,17 +34,27 @@
 # To get nice view
 /vis/geometry/set/visibility World 0 false
 /vis/geometry/set/colour PolyChamberOuterL 0 0.5 0.6 0.6 0.3
-/vis/geometry/set/colour QuadSupportL 0 0.6 0.6 0.6 0.4
-/vis/geometry/set/colour SupportL 0 0.7 0.7 0.7 1
 /vis/geometry/set/colour PolyChamberInnerL 0 0 0.7 1 0.3
-/vis/geometry/set/colour QuadL 0 0.722 0.451 0.2 1
-/vis/geometry/set/colour PCBBTL 0 0.722 0.55 0.2 1
 /vis/geometry/set/colour DiskL 0 0.5 0.5 0.5 0.5
+
+/vis/geometry/set/colour PCBBTL 0 0.722 0.55 0.2 1
+/vis/geometry/set/colour PCBL 0 0.722 0.55 0.2 1
+/vis/geometry/set/colour IPML 0 0.6 0.6 0.6 1
+
+/vis/geometry/set/colour QuadL 0 0.722 0.451 0.2 1
+/vis/geometry/set/colour QuadSupportL 0 0.6 0.6 0.6 0.6
+/vis/geometry/set/colour SupportL 0 0.7 0.7 0.7 1
+
 /vis/geometry/set/colour CameraL 0 0.25 0.25 0.25 0.2
 /vis/geometry/set/visibility SensorL 0 false
 /vis/geometry/set/visibility PixelRowsL 0 false
-/vis/geometry/set/colour PixelCellsL 0 0.0 1.0 0.0 0.4
+/vis/geometry/set/colour PixelCellsL 0 1.0 0.6 0.0 0.6
 /vis/geometry/set/colour LensL 0 0.3 0.3 0.3 0.2
+
+/vis/geometry/set/colour MCPL 0 0.0 0.0 1.0 1
+/vis/geometry/set/colour PhosL 0 0.0 1.0 0.0 1
+/vis/geometry/set/colour FrameMCPL 0 0.5 0.5 0.5 1
+
 
 # Re-establish auto refreshing and verbosity:
 /vis/viewer/set/autoRefresh true

@@ -75,7 +75,9 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
 
   // MCP
   auto solidMCP = ConstructSolidMCP();
-  ConstructMCP(solidMCP);
+  auto solidPhos = ConstructSolidPhos();
+  auto solidFrameMCP = ConstructSolidFrameMCP();
+  ConstructMCP(solidMCP, solidPhos, solidFrameMCP);
 
   // Vision System
   auto solidCam = ConstructSolidCamera();
@@ -84,10 +86,10 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   ConstructVisionS(solidCam, solidLens, solidSensor);
 
   // Quads
-  // auto solidQuad = ConstructSolidQuad();
-  // ConstructQuad(solidQuad);
-  // auto solidQuadSupport = ConstructSolidQuadSupport();
-  // ConstructQuadSupport(solidQuadSupport);
+  auto solidQuad = ConstructSolidQuad();
+  ConstructQuad(solidQuad);
+  auto solidQuadSupport = ConstructSolidQuadSupport();
+  ConstructQuadSupport(solidQuadSupport);
 
   // LWU Support
   auto solidSupportLWU = ConstructSolidLWUSupport();
@@ -319,12 +321,26 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidPCB() {
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidMCP() {
-  auto meshMCP = CADMesh::TessellatedMesh::FromSTL("MCP/MCP_glass.stl");
+
+  G4double phiS = 0. * degree;
+  G4double phiT = 360. * degree;
+  return new G4Tubs("MCP", 0.0 * mm, 23.0 * mm, 0.5 * mm, phiS, phiT);
+  /*   auto meshMCP = CADMesh::TessellatedMesh::FromSTL("MCP/MCP_glass.stl");
   meshMCP->SetScale(mm);
   meshMCP->SetReverse(false);
-  // meshMCP->SetOffset(
-  //    G4ThreeVector(-1.12595 * mm, -916.165 * mm, -311.819 * mm));
-  return meshMCP->GetSolid();
+  return meshMCP->GetSolid(); */
+}
+
+G4VSolid *ESSDetectorConstruction::ConstructSolidPhos() {
+  G4double phiS = 0. * degree;
+  G4double phiT = 360. * degree;
+  return new G4Tubs("Phos", 0.0 * mm, 23.0 * mm, 0.25 * mm, phiS, phiT);
+}
+
+G4VSolid *ESSDetectorConstruction::ConstructSolidFrameMCP() {
+  G4double phiS = 0. * degree;
+  G4double phiT = 360. * degree;
+  return new G4Tubs("FrameMCP", 23.5 * mm, 35.0 * mm, 2.5 * mm, phiS, phiT);
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidDisk() {
@@ -505,11 +521,33 @@ void ESSDetectorConstruction::ConstructIPM(G4VSolid *solidFrame,
 void ESSDetectorConstruction::ConstructMCP(G4VSolid *solidMCP,
                                            G4VSolid *solidPhos,
                                            G4VSolid *solidFrame) {
-  mcpL = new G4LogicalVolume(solidMCP, mat_copper, "MCPL");
-  new G4PVPlacement(nullptr, G4ThreeVector(0. * mm, .0 * mm, 206 * mm), mcpL,
-                    "MCP1", vacuumL, false, 0, checkOverlaps);
-  new G4PVPlacement(nullptr, G4ThreeVector(0. * mm, .0 * mm, 372 * mm), mcpL,
-                    "MCP2", vacuumL, false, 1, checkOverlaps);
+  mcpL = new G4LogicalVolume(solidMCP, mat_mcp_glass, "MCPL");
+  phosL = new G4LogicalVolume(solidPhos, mat_silicon, "PhosL");
+  mcp_frameL = new G4LogicalVolume(solidFrame, mat_steel, "FrameMCPL");
+
+  auto rotMCP = new G4RotationMatrix();
+  rotMCP->rotateY(90. * deg);
+  new G4PVPlacement(new G4RotationMatrix(*rotMCP),
+                    G4ThreeVector(58. * mm, .0 * mm, 206 * mm), mcpL, "MCP1",
+                    vacuumL, false, 0, checkOverlaps);
+  new G4PVPlacement(new G4RotationMatrix(*rotMCP),
+                    G4ThreeVector(62.5 * mm, .0 * mm, 206 * mm), phosL, "Phos1",
+                    vacuumL, false, 0, checkOverlaps);
+  new G4PVPlacement(new G4RotationMatrix(*rotMCP),
+                    G4ThreeVector(60. * mm, .0 * mm, 206 * mm), mcp_frameL,
+                    "FrameMCP1", vacuumL, false, 0, checkOverlaps);
+
+  rotMCP = new G4RotationMatrix();
+  rotMCP->rotateX(90. * deg);
+  new G4PVPlacement(new G4RotationMatrix(*rotMCP),
+                    G4ThreeVector(0. * mm, 58 * mm, 372 * mm), mcpL, "MCP2",
+                    vacuumL, false, 1, checkOverlaps);
+  new G4PVPlacement(new G4RotationMatrix(*rotMCP),
+                    G4ThreeVector(0. * mm, 62.5 * mm, 372 * mm), phosL, "Phos2",
+                    vacuumL, false, 1, checkOverlaps);
+  new G4PVPlacement(new G4RotationMatrix(*rotMCP),
+                    G4ThreeVector(0. * mm, 60.0 * mm, 372 * mm), mcp_frameL,
+                    "FrameMCP2", vacuumL, false, 1, checkOverlaps);
 }
 
 void ESSDetectorConstruction::ConstructVisionS(G4VSolid *solidCam,
