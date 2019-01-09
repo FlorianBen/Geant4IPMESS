@@ -33,7 +33,8 @@ class G4VPhysicalVolume;
 /**
  * Detector construction class to define materials and geometry.
  */
-class ESSDetectorConstruction : public G4VUserDetectorConstruction {
+class ESSDetectorConstruction : public G4VUserDetectorConstruction
+{
 public:
   ESSDetectorConstruction();
   virtual ~ESSDetectorConstruction();
@@ -148,6 +149,7 @@ private:
   G4Material *mat_macor;
   G4Material *mat_mcp_glass;
   G4Material *mat_pcb;
+  G4Material *mat_silicon;
   G4Material *mat_steel;
   G4Material *mat_vacuum;
 

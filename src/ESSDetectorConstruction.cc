@@ -114,13 +114,12 @@ void ESSDetectorConstruction::ConstructMaterials() {
   mat_mcp_glass = new G4Material("MCP_glass", 4. * g / cm3, 9, kStateSolid);
   mat_steel = nistManager->FindOrBuildMaterial("G4_STAINLESS-STEEL");
 
-  // Build materials for vacuum.
   // Vacuum condition (ESS condition)
+  // TODO: Check relation between density and pressure
   G4double density = (1e-12 / 1013.) * 27. * mg / cm3;
   G4double tempVacuum = 293. * kelvin;
   G4double presVacuum = 1.0e-12 * bar;
 
-  // G4String symbol;
   G4int nAtoms;
   auto elH = nistManager->FindOrBuildElement(
       "H"); // new G4Element("Hydrogen", symbol = "H", z = 1., a);
@@ -194,6 +193,9 @@ void ESSDetectorConstruction::ConstructMaterials() {
   mat_mcp_glass->AddElement(elAs, 0.4 * perCent);
   mat_mcp_glass->AddElement(elCs, 0.2 * perCent);
   mat_mcp_glass->AddElement(elNa, fracMass = 0.1 * perCent);
+
+  // Silicon
+  mat_silicon = nistManager->FindOrBuildMaterial("G4_Si");
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidOuterLWU() {
@@ -540,9 +542,9 @@ void ESSDetectorConstruction::ConstructVisionS(G4VSolid *solidCam,
   auto solidPixelCells = new G4Box("SolidPixelCells", size_pixel / 2,
                                    size_pixel / 2, thickness_sensor);
 
-  pixelRowsL = new G4LogicalVolume(solidPixelRows, mat_mcp_glass, "PixelRowsL");
+  pixelRowsL = new G4LogicalVolume(solidPixelRows, mat_silicon, "PixelRowsL");
   pixelCellsL =
-      new G4LogicalVolume(solidPixelCells, mat_mcp_glass, "PixelCellsL");
+      new G4LogicalVolume(solidPixelCells, mat_silicon, "PixelCellsL");
 
   new G4PVReplica("PixelRows", pixelRowsL, sensorL, kXAxis, nx_pixels,
                   size_pixel);
