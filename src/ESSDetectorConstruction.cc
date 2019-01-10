@@ -101,10 +101,10 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
 }
 
 void ESSDetectorConstruction::ConstructSDandField() {
-    auto sdManager = G4SDManager::GetSDMpointer();
-    auto cameraSD = new ESSCameraSD("CamSD", "CameraCollection");
-    sdManager->AddNewDetector(cameraSD);
-    pixelCellsL->SetSensitiveDetector(cameraSD);
+  auto sdManager = G4SDManager::GetSDMpointer();
+  auto cameraSD = new ESSCameraSD("CamSD", "CameraCollection");
+  sdManager->AddNewDetector(cameraSD);
+  pixelCellsL->SetSensitiveDetector(cameraSD);
 }
 
 void ESSDetectorConstruction::ConstructMaterials() {
@@ -563,8 +563,6 @@ void ESSDetectorConstruction::ConstructVisionS(G4VSolid *solidCam,
 
   new G4PVPlacement(rotCam1, G4ThreeVector(350. * mm, .0 * mm, 206 * mm), camL,
                     "Cam1", worldL, false, 0, checkOverlaps);
-  new G4PVPlacement(nullptr, G4ThreeVector(-3. * mm, .0 * mm, 0 * mm), sensorL,
-                    "Sensor1", camL, false, 0, checkOverlaps);
   new G4PVPlacement(rotCam1, G4ThreeVector(290. * mm, .0 * mm, 206 * mm), lensL,
                     "Lens1", worldL, false, 0, checkOverlaps);
   auto rotCam2 = new G4RotationMatrix();
@@ -573,6 +571,10 @@ void ESSDetectorConstruction::ConstructVisionS(G4VSolid *solidCam,
                     "Cam2", worldL, false, 1, checkOverlaps);
   new G4PVPlacement(rotCam2, G4ThreeVector(.0 * mm, 290. * mm, 372 * mm), lensL,
                     "Lens2", worldL, false, 1, checkOverlaps);
+
+  // Sensor
+  new G4PVPlacement(nullptr, G4ThreeVector(-3. * mm, .0 * mm, 0 * mm), sensorL,
+                    "Sensor1", camL, false, 0, checkOverlaps);
 
   // Pixels
   // TODO: Parametrisation
