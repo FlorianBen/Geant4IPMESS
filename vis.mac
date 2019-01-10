@@ -10,7 +10,7 @@
 /vis/drawVolume
 
 # Axes
-/vis/scene/add/axes 0 0 0 125 mm
+/vis/scene/add/axes -1 0 0 0.5 m
 
 # Specify view angle:
 /vis/viewer/set/viewpointVector -1 1 -1
@@ -18,7 +18,7 @@
 
 # Specify style (surface, wireframe, auxiliary edges,...)
 /vis/viewer/set/style surface
-#/vis/viewer/set/auxiliaryEdge true
+#/vis/viewer/set/auxilia/vis/scene/add/text2D 0 0 20 -1 -1 testryEdge true
 /vis/viewer/set/lineSegmentsPerCircle 30
 
 # Draw smooth trajectories at end of event, showing trajectory points
@@ -30,6 +30,11 @@
 
 # To superimpose all of the events from a given run:
 /vis/scene/endOfEventAction accumulate
+
+# Set a title
+/vis/set/textColour 0.722 0.451 0.2 1
+/vis/scene/add/text2D -0.85 0.8 30 0 0 IPM in ESS LWU
+/vis/scene/add/date
 
 # To get nice view
 /vis/geometry/set/visibility World 0 false
@@ -54,7 +59,6 @@
 /vis/geometry/set/colour MCPL 0 0.0 0.0 1.0 1
 /vis/geometry/set/colour PhosL 0 0.0 1.0 0.0 1
 /vis/geometry/set/colour FrameMCPL 0 0.5 0.5 0.5 1
-
 
 # Re-establish auto refreshing and verbosity:
 /vis/viewer/set/autoRefresh true

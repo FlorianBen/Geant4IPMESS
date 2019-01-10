@@ -12,3 +12,5 @@
 /gui/addIcon "View Right" user_icon "/vis/viewer/set/viewpointVector 0 0 -1" icons/view-right.svg
 /gui/addIcon "View Front" user_icon "/vis/viewer/set/viewpointVector 1 0 0" icons/view-front.svg
 /gui/addIcon "View Rear" user_icon "/vis/viewer/set/viewpointVector -1 0 0" icons/view-rear.svg
+
+/gui/addIcon "Screenshoot" user_icon "/vis/ogl/export scene.png" icons/camera-photo.svg
