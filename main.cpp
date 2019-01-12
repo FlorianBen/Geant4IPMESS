@@ -1,7 +1,12 @@
 #ifdef G4MULTITHREADED
-#include "G4MTRunManager.hh"
+#include <G4MTRunManager.hh>
 #else
-#include "G4RunManager.hh"
+#include <G4RunManager.hh>
+#endif
+
+#ifdef G4MPI
+#include <G4MPImanager.hh>
+#include <G4MPIsession.hh>
 #endif
 
 #include <FTFP_BERT.hh>
@@ -22,6 +27,19 @@
 #include "ESSDetectorConstruction.hh"
 
 int main(int argc, char *argv[]) {
+
+  #ifdef G4MPI
+  G4MPImanager* g4MPI = new G4MPImanager(argc, argv);
+  G4MPIsession* session = g4MPI-> GetMPIsession();
+
+  // LAM/MPI users can use G4tcsh.
+  G4String prompt = "[40;01;33m";
+  prompt += "G4MPI";
+  prompt += "[40;31m(%s)[40;36m[%/][00;30m:";
+  session-> SetPrompt(prompt);
+  #endif
+
+
   // Detect interactive mode (if no arguments) and define UI session
   G4UIExecutive *ui = 0;
   if (argc == 1) {
@@ -47,6 +65,8 @@ int main(int argc, char *argv[]) {
   // User action initialization
   runManager->SetUserInitialization(new ESSActionInitialization());
 
+  runManager->Initialize();
+  
   // Initialize visualization
   G4VisManager *visManager = new G4VisExecutive;
   visManager->Initialize();
