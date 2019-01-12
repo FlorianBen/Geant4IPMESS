@@ -19,13 +19,22 @@ public:
   virtual void Print();
 
   void SetCamNumber(G4int number) { fCamNumber = number; }
+  void SetColumnNumber(G4int number) { fColumnNumber = number; }
+  void SetRowNumber(G4int number) { fRowNumber = number; }
+
   void AddEdep(G4double edep) { fEdep += edep; }
 
   G4int GetCamNumber() const { return fCamNumber; }
+  G4int GetColumnNumber() const { return fColumnNumber; }
+  G4int GetRowNumber() const { return fRowNumber; }
+
+
   G4double GetEdep() const { return fEdep; }
 
 private:
   G4int fCamNumber;
+  G4int fColumnNumber;
+  G4int fRowNumber;
   G4double fEdep;
 };
 
