@@ -2,6 +2,10 @@
 #include "ESSAnalysis.hh"
 #include "ESSConstants.hh"
 
+#ifdef G4MPI
+#include <G4MPImanager.hh>
+#endif
+
 #include <G4Run.hh>
 #include <G4SystemOfUnits.hh>
 
@@ -33,6 +37,10 @@ ESSRunAction::~ESSRunAction() { delete G4AnalysisManager::Instance(); }
 void ESSRunAction::BeginOfRunAction(const G4Run * /*run*/) {
   // Open an output file
   G4String fileName = "camera";
+  #ifdef G4MPI
+  fileName = fileName + "_rank" + std::to_string(G4MPImanager::GetManager()-> GetRank());
+  #endif
+  fileName = fileName + "_hist";
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
   analysisManager->OpenFile(fileName);
 }

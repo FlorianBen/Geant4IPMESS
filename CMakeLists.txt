@@ -19,6 +19,7 @@ include_directories(${CADMESH_INCLUDE_DIRS})
 option(WITH_MPI_SUPPORT "Build simulation with MPI support" OFF)
 if(WITH_MPI_SUPPORT)
   find_package(G4mpi REQUIRED)
+  include_directories(${G4mpi_INCLUDE_DIR})
   #add_definitions(-DTOOLS_USE_NATIVE_MPI) 
 endif()
 

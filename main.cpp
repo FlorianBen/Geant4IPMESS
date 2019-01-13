@@ -37,14 +37,13 @@ int main(int argc, char *argv[]) {
   prompt += "G4MPI";
   prompt += "[40;31m(%s)[40;36m[%/][00;30m:";
   session-> SetPrompt(prompt);
-  #endif
-
-
+  #else
   // Detect interactive mode (if no arguments) and define UI session
   G4UIExecutive *ui = 0;
   if (argc == 1) {
     ui = new G4UIExecutive(argc, argv);
   }
+  #endif
 
   // Construct the run manager
   //
@@ -66,14 +65,19 @@ int main(int argc, char *argv[]) {
   runManager->SetUserInitialization(new ESSActionInitialization());
 
   runManager->Initialize();
-  
+
   // Initialize visualization
   G4VisManager *visManager = new G4VisExecutive;
   visManager->Initialize();
 
+  #ifdef G4MPI
+  session-> SessionStart();
+  delete visManager;
+  delete g4MPI;
+  delete runManager;
+  #else
   // Get the pointer to the User Interface manager
   G4UImanager *UImanager = G4UImanager::GetUIpointer();
-
   if (!ui) {
     // batch mode
     G4String command = "/control/execute ";
@@ -88,9 +92,9 @@ int main(int argc, char *argv[]) {
     ui->SessionStart();
     delete ui;
   }
-
   delete visManager;
   delete runManager;
+  #endif
 
-  return 0;
+  return EXIT_SUCCESS;
 }
