@@ -95,6 +95,11 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   auto solidSupportLWU = ConstructSolidLWUSupport();
   ConstructLWUSupport(solidSupportLWU);
 
+  // LWU Feets
+  auto solidFootLWU = ConstructSolidLWUFoot();
+  auto solidFootInterLWU = ConstructSolidLWUFootInter();
+  ConstructFeets(solidFootLWU, solidFootInterLWU);
+
   // G4GDMLParser parser;
   // parser.Write("out.gdml", worldPV);
   return worldPV;
@@ -432,6 +437,22 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidLWUSupport() {
   return unionSolid;
 }
 
+G4VSolid* ESSDetectorConstruction::ConstructSolidLWUFoot() {
+  auto solidFoot = CADMesh::TessellatedMesh::FromSTL("LWU_E_type1/LWU_foot.stl");
+  solidFoot->SetScale(mm);
+  solidFoot->SetReverse(false);
+  solidFoot->SetOffset(G4ThreeVector(0 * mm, .0 * mm, 0.0 * mm));
+  return solidFoot->GetSolid();  
+}
+
+G4VSolid* ESSDetectorConstruction::ConstructSolidLWUFootInter() {
+  auto solidFootInter = CADMesh::TessellatedMesh::FromSTL("LWU_E_type1/LWU_foot_inter.stl");
+  solidFootInter->SetScale(mm);
+  solidFootInter->SetReverse(false);
+  solidFootInter->SetOffset(G4ThreeVector(0 * mm, .0 * mm, 0.0 * mm));
+  return solidFootInter->GetSolid();  
+}
+
 void ESSDetectorConstruction::ConstructLWU(G4VSolid *solidOuter,
                                            G4VSolid *solidInner) {
   pipeL = new G4LogicalVolume(solidOuter, mat_steel, "PolyChamberOuterL");
@@ -628,4 +649,23 @@ void ESSDetectorConstruction::ConstructLWUSupport(G4VSolid *solidSupportLWU) {
   LWU_SupportL = new G4LogicalVolume(solidSupportLWU, mat_steel, "SupportL");
   new G4PVPlacement(nullptr, G4ThreeVector(230. * mm, -510. * mm, 348.6 * mm),
                     LWU_SupportL, "Support", worldL, false, 0, checkOverlaps);
+}
+
+void ESSDetectorConstruction::ConstructFeets(G4VSolid *solidFoot, G4VSolid *solidFootInter) {
+  auto rotFoot = new G4RotationMatrix();
+  rotFoot->rotateX(90 * deg);
+  auto rotFootInner = new G4RotationMatrix();
+  rotFootInner->rotateZ(90 * deg);
+
+  LWU_FootL = new G4LogicalVolume(solidFoot, mat_steel, "LWU_FootL");
+  LWU_FootInterL = new G4LogicalVolume(solidFootInter, mat_steel, "LWU_FootInterL");
+
+  new G4PVPlacement(new G4RotationMatrix(*rotFoot), G4ThreeVector(0. * mm, -1475 * mm, -135. * mm),
+                    LWU_FootL, "Foot1", worldL, false, 0, checkOverlaps);
+  rotFoot->rotateZ(180 * deg);
+
+  new G4PVPlacement(rotFoot, G4ThreeVector(0. * mm, -1475 * mm, 875. * mm),
+                    LWU_FootL, "Foot2", worldL, false, 1, checkOverlaps);
+  new G4PVPlacement(rotFootInner, G4ThreeVector(0. * mm, -1150. * mm, 42. * mm),
+                    LWU_FootInterL, "FootInter", worldL, false, 1, checkOverlaps);  
 }

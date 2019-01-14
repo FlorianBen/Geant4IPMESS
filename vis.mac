@@ -49,6 +49,8 @@
 /vis/geometry/set/colour QuadL 0 0.722 0.451 0.2 1
 /vis/geometry/set/colour QuadSupportL 0 0.6 0.6 0.6 0.6
 /vis/geometry/set/colour SupportL 0 0.7 0.7 0.7 1
+/vis/geometry/set/colour LWU_FootL 0 0. 0. 1 1
+/vis/geometry/set/colour LWU_FootInterL 0 0. 0. 1 1
 
 /vis/geometry/set/colour CameraL 0 0.25 0.25 0.25 0.2
 /vis/geometry/set/visibility SensorL 0 false

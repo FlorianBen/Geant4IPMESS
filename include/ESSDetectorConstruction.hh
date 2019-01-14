@@ -108,6 +108,14 @@ protected:
    */
   G4VSolid *ConstructSolidLWUSupport();
   /**
+   * Construct Foot solid.
+   */
+  G4VSolid *ConstructSolidLWUFoot();
+  /**
+   * Construct Foot Inter.
+   */
+  G4VSolid *ConstructSolidLWUFootInter();
+  /**
    * Placement of LWU.
    */
   void ConstructLWU(G4VSolid *solidOuter, G4VSolid *solidInner);
@@ -143,6 +151,10 @@ protected:
   /**
    * Placement of Template.
    */
+  void ConstructFeets(G4VSolid *solidFoot, G4VSolid *solidFootInter);
+  /**
+   * Placement of Template.
+   */
   void ConstructTemplate(G4VSolid *solidTemp);
 
 private:
@@ -175,6 +187,8 @@ private:
   G4LogicalVolume *quadL;
   G4LogicalVolume *quad_SupportL;
   G4LogicalVolume *LWU_SupportL;
+  G4LogicalVolume *LWU_FootL;
+  G4LogicalVolume *LWU_FootInterL; 
 
   G4int nx_pixels;
   G4int ny_pixels;
