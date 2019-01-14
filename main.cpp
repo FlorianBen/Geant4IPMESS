@@ -33,9 +33,9 @@ int main(int argc, char *argv[]) {
   G4MPIsession* session = g4MPI-> GetMPIsession();
 
   // LAM/MPI users can use G4tcsh.
-  G4String prompt = "[40;01;33m";
-  prompt += "G4MPI";
-  prompt += "[40;31m(%s)[40;36m[%/][00;30m:";
+  G4String prompt = "[";
+  prompt += "\033[31mG4MPI\033[0m";
+  prompt += "](\e[104m%s\e[49m)[%/]:";
   session-> SetPrompt(prompt);
   #else
   // Detect interactive mode (if no arguments) and define UI session
