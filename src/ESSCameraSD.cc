@@ -1,6 +1,7 @@
-#include "ESSConstants.hh"
 #include "ESSCameraSD.hh"
 #include "ESSAnalysis.hh"
+#include "ESSConstants.hh"
+
 
 #include <G4HCofThisEvent.hh>
 #include <G4SDManager.hh>
@@ -11,30 +12,26 @@
 
 ESSCameraSD::ESSCameraSD(const G4String &name,
                          const G4String &hitsCollectionName)
-    : G4VSensitiveDetector(name), fHitsCollection(0)
-{
+    : G4VSensitiveDetector(name), fHitsCollection(0) {
   collectionName.insert(hitsCollectionName);
 }
 
 ESSCameraSD::~ESSCameraSD() {}
 
-void ESSCameraSD::Initialize(G4HCofThisEvent *hce)
-{
+void ESSCameraSD::Initialize(G4HCofThisEvent *hce) {
   fHitsCollection =
       new ESSCameraHitsCollection(SensitiveDetectorName, collectionName[0]);
 
   // Add this collection in hce
   G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
   hce->AddHitsCollection(hcID, fHitsCollection);
-  for (auto i = 0; i < kNofSensorRows; i++)
-  {
+  for (auto i = 0; i < kNofSensorRows; i++) {
     auto hit = new ESSCameraHit();
     fHitsCollection->insert(hit);
   }
 }
 
-G4bool ESSCameraSD::ProcessHits(G4Step *step, G4TouchableHistory *)
-{
+G4bool ESSCameraSD::ProcessHits(G4Step *step, G4TouchableHistory *) {
   // energy deposit
   G4double edep = step->GetTotalEnergyDeposit();
   if (edep == 0.)
@@ -56,7 +53,7 @@ G4bool ESSCameraSD::ProcessHits(G4Step *step, G4TouchableHistory *)
   hit->SetRowNumber(rowNumber);
 
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
-  //analysisManager->FillH1(hit->GetCamNumber(), edep / MeV);
+  // analysisManager->FillH1(hit->GetCamNumber(), edep / MeV);
   analysisManager->FillH2(cameraNumber, columnNumber, rowNumber, edep / MeV);
   return true;
 }

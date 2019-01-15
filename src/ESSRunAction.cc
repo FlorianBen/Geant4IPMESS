@@ -28,7 +28,8 @@ ESSRunAction::ESSRunAction() : G4UserRunAction() {
     htitle += os.str();
     analysisManager->CreateH2(hname, htitle, kNofSensorColumns, 0,
                               kNofSensorColumns - 1, kNofSensorRows, 0,
-                              kNofSensorRows - 1);//, "x (pixels)", "y (pixels)");
+                              kNofSensorRows -
+                                  1); //, "x (pixels)", "y (pixels)");
   }
 }
 
@@ -37,9 +38,10 @@ ESSRunAction::~ESSRunAction() { delete G4AnalysisManager::Instance(); }
 void ESSRunAction::BeginOfRunAction(const G4Run * /*run*/) {
   // Open an output file
   G4String fileName = "camera";
-  #ifdef G4MPI
-  fileName = fileName + "_rank" + std::to_string(G4MPImanager::GetManager()-> GetRank());
-  #endif
+#ifdef G4MPI
+  fileName = fileName + "_rank" +
+             std::to_string(G4MPImanager::GetManager()->GetRank());
+#endif
   fileName = fileName + "_hist";
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
   analysisManager->OpenFile(fileName);

@@ -3,20 +3,16 @@
 
 #include <G4UserEventAction.hh>
 
-/// Event action class
+class ESSEventAction : public G4UserEventAction {
+public:
+  ESSEventAction(bool verbose = true);
+  virtual ~ESSEventAction();
 
-class ESSEventAction : public G4UserEventAction
-{
-  public:
-    ESSEventAction(bool verbose = true);
-    virtual ~ESSEventAction();
+  virtual void BeginOfEventAction(const G4Event *event);
+  virtual void EndOfEventAction(const G4Event *event);
 
-    virtual void  BeginOfEventAction(const G4Event* event);
-    virtual void    EndOfEventAction(const G4Event* event);
-  private:
+private:
   bool fVerbose;
 };
 
 #endif
-
-    

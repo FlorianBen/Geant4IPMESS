@@ -1,12 +1,10 @@
 #ifndef ESSRunAction_h
 #define ESSRunAction_h 1
 
-#include "G4UserRunAction.hh"
-#include "globals.hh"
+#include <G4UserRunAction.hh>
+#include <globals.hh>
 
 class G4Run;
-
-/// Run action class
 
 class ESSRunAction : public G4UserRunAction {
 public:
