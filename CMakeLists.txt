@@ -27,32 +27,33 @@ endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(Geant4ESS_inc
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSConstants.hh
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSSensorParameterisation.hh
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSAnalysis.hh
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSEventAction.hh
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSDetectorConstruction.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSActionInitialization.hh
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSPrimaryGeneratorAction.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSAnalysis.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSCameraHit.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSCameraSD.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSConfigManager.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSConstants.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSDetectorConstruction.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSEventAction.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSMCPHit.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSMCPSD.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSPrimaryGeneratorAction.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSRunAction.hh
-
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSSensorParameterisation.hh
   )
 
 set(Geant4ESS_src
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSEventAction.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSSensorParameterisation.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSDetectorConstruction.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSActionInitialization.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSPrimaryGeneratorAction.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSCameraHit.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSCameraSD.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSConfigManager.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSDetectorConstruction.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSEventAction.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSPrimaryGeneratorAction.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSMCPHit.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSMCPSD.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSRunAction.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSSensorParameterisation.cc
   )
 
 add_executable(Geant4ESS main.cpp ${Geant4ESS_inc} ${Geant4ESS_src})
@@ -77,7 +78,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/run.mac ${CMAKE_CURRENT_BINARY_DIR} C
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/camera.C ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/MPIhost ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-
 
 add_custom_command(TARGET Geant4ESS POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
