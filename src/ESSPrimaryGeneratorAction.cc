@@ -7,19 +7,24 @@
 #include <G4PrimaryVertex.hh>
 #include <G4SystemOfUnits.hh>
 #include <G4ios.hh>
+#include <G4RandomTools.hh>
+
+#include <Randomize.hh>
 
 ESSPrimaryGeneratorAction::ESSPrimaryGeneratorAction()
-    : G4VUserPrimaryGeneratorAction() {}
-
-ESSPrimaryGeneratorAction::~ESSPrimaryGeneratorAction() {}
-
-void ESSPrimaryGeneratorAction::GeneratePrimaries(G4Event *event) {
-  // this function is called at the begining of ecah event
+    : G4VUserPrimaryGeneratorAction() ,
+      fMessenger(0),
+  fParticleGun(0),
+  fRandom(true),
+  frandEnegy(10.0 *MeV)
+    {
+  G4int nofParticles = 1;
+  fParticleGun = new G4ParticleGun(nofParticles);
 
   // Define particle properties
   G4String particleName = "proton";
-  G4ThreeVector position(0, 0, 0.372 * m);
-  G4ThreeVector momentum(0. * GeV, 2. * GeV, 0 * GeV);
+  G4ThreeVector position(0, 0, -0.030 * m);
+  G4ThreeVector momentum(0.0 * GeV, 0. * GeV, 2 * GeV);
   G4double time = 0;
 
   // Get particle definition from G4ParticleTable
@@ -32,15 +37,31 @@ void ESSPrimaryGeneratorAction::GeneratePrimaries(G4Event *event) {
     exit(1);
   }
 
-  // Create primary particle
-  G4PrimaryParticle *primaryParticle =
-      new G4PrimaryParticle(particleDefinition);
-  primaryParticle->SetMomentum(momentum.x(), momentum.y(), momentum.z());
-  primaryParticle->SetMass(particleDefinition->GetPDGMass());
-  primaryParticle->SetCharge(particleDefinition->GetPDGCharge());
+  fParticleGun->SetParticleTime(time);
+  fParticleGun->SetParticleDefinition(particleDefinition);
+  fParticleGun->SetParticleMomentum(momentum);
+  fParticleGun->SetParticlePosition(position);
 
-  // Create vertex
-  G4PrimaryVertex *vertex = new G4PrimaryVertex(position, time);
-  vertex->SetPrimary(primaryParticle);
-  event->AddPrimaryVertex(vertex);
+  // Generic messenger
+  fMessenger 
+    = new G4GenericMessenger(this, "/ESS/primary/", "Primary generator control");
+
+  fMessenger
+    ->DeclareProperty("setRandom", 
+                      fRandom, 
+                      "Activate/Inactivate random option");
+  fMessenger->DeclarePropertyWithUnit("setRandEnergy","MeV",frandEnegy,"Mean energy for random deviation");
+}
+
+ESSPrimaryGeneratorAction::~ESSPrimaryGeneratorAction() {}
+
+void ESSPrimaryGeneratorAction::GeneratePrimaries(G4Event *event) {
+  if(fRandom){
+    auto base = fParticleGun->GetParticleMomentumDirection();
+    base.setZ(2.0 * GeV);
+    base.setX(G4RandGauss::shoot(0,0.5)*frandEnegy);
+    base.setY(G4RandGauss::shoot(0,0.5)*frandEnegy);
+    fParticleGun->SetParticleMomentumDirection(base);
+  }
+  fParticleGun->GeneratePrimaryVertex(event);
 }
