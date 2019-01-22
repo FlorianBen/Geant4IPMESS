@@ -11,7 +11,7 @@ class G4TouchableHistory;
 
 class ESSMCPSD : public G4VSensitiveDetector {
 public:
-  ESSMCPSD(const G4String &name, const G4String &hitsCollectionName);
+  ESSMCPSD(const G4String &name, const G4String &hitsCollectionName, const G4int idTuple);
   virtual ~ESSMCPSD();
 
   virtual void Initialize(G4HCofThisEvent *hce);
@@ -19,6 +19,7 @@ public:
 
 private:
   ESSMCPHitsCollection *fHitsCollection;
+  G4int fidTuple;
 };
 
 #endif

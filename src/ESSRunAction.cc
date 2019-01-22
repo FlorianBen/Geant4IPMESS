@@ -14,6 +14,7 @@ ESSRunAction::ESSRunAction() : G4UserRunAction() {
   // The choice of analysis technology is done via selectin of a namespace
   // in B4Analysis.hh
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
+  analysisManager->SetNtupleMerging(true);
   analysisManager->SetVerboseLevel(1);
   G4cout << "Using " << analysisManager->GetType() << " analysis manager"
          << G4endl;
@@ -31,6 +32,19 @@ ESSRunAction::ESSRunAction() : G4UserRunAction() {
                               kNofSensorRows -
                                   1); //, "x (pixels)", "y (pixels)");
   }
+
+  analysisManager->CreateNtuple("MCP", "MCP hits");
+  analysisManager->CreateNtupleIColumn("ID");      // column id = 0
+  analysisManager->CreateNtupleIColumn("PDG");     // column id = 1
+  analysisManager->CreateNtupleDColumn("Ekin");    // column id = 2
+  analysisManager->CreateNtupleDColumn("Xpos");    // column id = 3 
+  analysisManager->CreateNtupleDColumn("Ypos");    // column id = 4
+  analysisManager->CreateNtupleDColumn("Zpos");    // column id = 5
+  analysisManager->CreateNtupleDColumn("Xmom");    // column id = 6
+  analysisManager->CreateNtupleDColumn("Ymom");    // column id = 7
+  analysisManager->CreateNtupleDColumn("Zmom");    // column id = 8
+  analysisManager->CreateNtupleDColumn("time");    // column id = 9
+  analysisManager->FinishNtuple();
 }
 
 ESSRunAction::~ESSRunAction() { delete G4AnalysisManager::Instance(); }

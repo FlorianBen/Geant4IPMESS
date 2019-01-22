@@ -6,7 +6,7 @@
 
 G4ThreadLocal G4Allocator<ESSMCPHit> *ESSMCPHitAllocator = 0;
 
-ESSMCPHit::ESSMCPHit() : G4VHit(), fCamNumber(-1), fEdep(0.) {}
+ESSMCPHit::ESSMCPHit() : G4VHit(), fMCPnumber(-1), fEdep(0.) {}
 
 ESSMCPHit::~ESSMCPHit() {}
 
@@ -20,7 +20,7 @@ int ESSMCPHit::operator==(const ESSMCPHit & /*right*/) const { return 0; }
 
 void ESSMCPHit::Print() {
   if (fEdep > 0.) {
-    G4cout << "Camera hit in layer: " << fCamNumber
+    G4cout << "MCPHit in MCP: " << fMCPnumber
            << "  Edep: " << std::setw(7) << G4BestUnit(fEdep, "Energy")
            << G4endl;
   }
