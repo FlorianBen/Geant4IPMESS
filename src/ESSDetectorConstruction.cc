@@ -1,5 +1,6 @@
 #include "ESSDetectorConstruction.hh"
 #include "ESSCameraSD.hh"
+#include "ESSMCPSD.hh"
 
 #include <string>
 
@@ -107,9 +108,14 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
 
 void ESSDetectorConstruction::ConstructSDandField() {
   auto sdManager = G4SDManager::GetSDMpointer();
+  
   auto cameraSD = new ESSCameraSD("CamSD", "CameraCollection");
   sdManager->AddNewDetector(cameraSD);
   pixelCellsL->SetSensitiveDetector(cameraSD);
+
+  auto mcpSD = new ESSMCPSD("MCPSD","MCPCollection",0);
+  sdManager->AddNewDetector(mcpSD);
+  mcpL->SetSensitiveDetector(mcpSD);
 }
 
 void ESSDetectorConstruction::ConstructMaterials() {
@@ -214,8 +220,8 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidOuterLWU() {
   G4double rIOuter[]{0 * cm, 0 * cm, 0 * cm, 0 * cm, 0 * cm, 0. * cm};
   G4double rOuter[]{55. * mm,  55. * mm, 130. * mm,
                     130. * mm, 55. * mm, 55. * mm};
-  G4double zplaneOuter[]{-285. * mm, -2 * mm,  0. * cm,
-                         457 * mm,   457 * mm, 1050 * mm};
+  G4double zplaneOuter[]{-505. * mm, -2 * mm,  0. * cm,
+                         457 * mm,   457 * mm, 1250 * mm};
   auto pipeOuterBeamPoly = new G4Polycone("PolyChamber", phiS, phiT, zplanes,
                                           zplaneOuter, rIOuter, rOuter);
   auto wireScannerOuterBox =
@@ -265,8 +271,8 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU() {
   // Inner shapes
   G4double rIInner[]{0 * cm, 0 * cm, 0 * cm, 0 * cm, 0 * cm, 0. * cm};
   G4double rInner[]{50 * mm, 50 * mm, 125 * mm, 125 * mm, 50 * mm, 50 * mm};
-  G4double zplaneInner[]{-280. * mm, 0 * mm,   0. * cm,
-                         455 * mm,   455 * mm, 1045 * mm};
+  G4double zplaneInner[]{-500. * mm, 0 * mm,   0. * cm,
+                         455 * mm,   455 * mm, 1245 * mm};
   auto pipeInnerBeamPoly = new G4Polycone("PolyVacuum", phiS, phiT, zplanes,
                                           zplaneInner, rIInner, rInner);
   auto wireScannerInnerBox =
@@ -594,7 +600,7 @@ void ESSDetectorConstruction::ConstructVisionS(G4VSolid *solidCam,
                     "Lens2", worldL, false, 1, checkOverlaps);
 
   // Sensor
-  new G4PVPlacement(nullptr, G4ThreeVector(-3. * mm, .0 * mm, 0 * mm), sensorL,
+  new G4PVPlacement(nullptr, G4ThreeVector(0. * mm, .0 * mm, 0 * mm), sensorL,
                     "Sensor1", camL, false, 0, checkOverlaps);
 
   // Pixels
