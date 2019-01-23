@@ -26,6 +26,21 @@ endif()
 # Debug
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Tools
+## Clang tidy
+find_program(
+  CLANG_TIDY_EXE
+  NAMES "clang-tidy"
+  DOC "Path to clang-tidy executable"
+  )
+if(NOT CLANG_TIDY_EXE)
+  message(STATUS "clang-tidy not found.")
+else()
+  message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
+  set(DO_CLANG_TIDY "${CLANG_TIDY_EXE}" "-checks=*,-clang-analyzer-alpha.*")
+endif()
+
+# Define source files
 set(Geant4ESS_inc
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSActionInitialization.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSAnalysis.hh
@@ -83,3 +98,9 @@ add_custom_command(TARGET Geant4ESS POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
   ${CMAKE_SOURCE_DIR}/data $<TARGET_FILE_DIR:Geant4ESS>)
 
+if(CLANG_TIDY_EXE)
+  set_target_properties(
+    Geant4ESS PROPERTIES
+    CXX_CLANG_TIDY "${DO_CLANG_TIDY}"
+  )
+endif()
