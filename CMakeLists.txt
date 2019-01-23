@@ -2,9 +2,10 @@
 #                                  Geant4 ESS                                 #
 ###############################################################################
 cmake_minimum_required(VERSION 3.6)
-
 project(Geant4ESS CXX)
 
+# External library
+## Geant4
 option(WITH_GEANT4_UIVIS "Build simulation with Geant4 UI and Vis drivers" ON)
 if(WITH_GEANT4_UIVIS)
   find_package(Geant4 REQUIRED ui_all vis_all)
@@ -12,10 +13,22 @@ else()
   find_package(Geant4 REQUIRED)
 endif()
 include(${Geant4_USE_FILE})
-
-find_package(cadmesh)
-include_directories(${CADMESH_INCLUDE_DIRS})
-
+## CADMesh
+option(WITH_STATIC_CADMESH "Build and static link CADMesh" OFF)
+if(WITH_STATIC_CADMESH)
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/CADMesh)
+else()
+  find_package(cadmesh)
+  include_directories(${CADMESH_INCLUDE_DIRS})
+endif()
+## YAML-CPP
+option(WITH_STATIC_YAMLCPP "Build and static link yaml-cpp" OFF)
+if(WITH_STATIC_YAMLCPP)
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/yaml-cpp)
+else()
+  message(STATUS "Not implemented yet")
+endif()
+## MPI
 option(WITH_MPI_SUPPORT "Build simulation with MPI support" OFF)
 if(WITH_MPI_SUPPORT)
   find_package(G4mpi REQUIRED)
@@ -71,6 +84,7 @@ set(Geant4ESS_src
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSSensorParameterisation.cc
   )
 
+# Define target
 add_executable(Geant4ESS main.cpp ${Geant4ESS_inc} ${Geant4ESS_src})
 if(WITH_MPI_SUPPORT)
   target_link_libraries(Geant4ESS ${G4mpi_LIBRARIES} ${Geant4_LIBRARIES})
@@ -80,6 +94,12 @@ else()
 endif()
 
 target_link_libraries(Geant4ESS ${cadmesh_LIBRARIES})
+
+if(WITH_STATIC_YAMLCPP)
+  target_link_libraries(Geant4ESS yaml-cpp)
+else()
+  message(STATUS "Not implemented yet")
+endif()
 
 target_include_directories(Geant4ESS PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -92,7 +112,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/icons.mac ${CMAKE_CURRENT_BINARY_DIR}
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/vis.mac ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/run.mac ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/camera.C ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/MPIhost ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 add_custom_command(TARGET Geant4ESS POST_BUILD
