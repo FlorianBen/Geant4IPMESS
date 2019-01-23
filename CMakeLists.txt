@@ -82,3 +82,4 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/MPIhost ${CMAKE_CURRENT_BINARY_DIR} C
 add_custom_command(TARGET Geant4ESS POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
   ${CMAKE_SOURCE_DIR}/data $<TARGET_FILE_DIR:Geant4ESS>)
+
