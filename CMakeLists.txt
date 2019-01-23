@@ -86,6 +86,7 @@ target_include_directories(Geant4ESS PUBLIC
   $<INSTALL_INTERFACE:include>
   PRIVATE src)
 
+# Configure file
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/init_vis.mac ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/icons.mac ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/vis.mac ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
