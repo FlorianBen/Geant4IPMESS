@@ -1,3 +1,6 @@
 [submodule "vendor/yaml-cpp"]
 	path = vendor/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "vendor/Geant4ESS"]
+	path = vendor/Geant4ESS
+	url = http://sedipcc175.extra.cea.fr/gitea/fbenedet/Geant4ESS.git
