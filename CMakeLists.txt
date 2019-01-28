@@ -93,7 +93,11 @@ else()
   target_link_libraries(Geant4ESS ${Geant4_LIBRARIES})
 endif()
 
-target_link_libraries(Geant4ESS ${cadmesh_LIBRARIES})
+if(WITH_STATIC_CADMESH)
+  target_link_libraries(Geant4ESS cadmesh)
+else()
+  target_link_libraries(Geant4ESS ${cadmesh_LIBRARIES})
+endif()
 
 if(WITH_STATIC_YAMLCPP)
   target_link_libraries(Geant4ESS yaml-cpp)
@@ -118,9 +122,9 @@ add_custom_command(TARGET Geant4ESS POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
   ${CMAKE_SOURCE_DIR}/data $<TARGET_FILE_DIR:Geant4ESS>)
 
-if(CLANG_TIDY_EXE)
-  set_target_properties(
-    Geant4ESS PROPERTIES
-    CXX_CLANG_TIDY "${DO_CLANG_TIDY}"
-  )
-endif()
+# if(CLANG_TIDY_EXE)
+#   set_target_properties(
+#     Geant4ESS PROPERTIES
+#     CXX_CLANG_TIDY "${DO_CLANG_TIDY}"
+#   )
+# endif()
