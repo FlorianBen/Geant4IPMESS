@@ -167,6 +167,7 @@ private:
   G4LogicalVolume *LWU_SupportL;
   G4LogicalVolume *LWU_FootL;
   G4LogicalVolume *LWU_FootInterL;
+  G4LogicalVolume *beamStopL;
 
   G4int nx_pixels;
   G4int ny_pixels;

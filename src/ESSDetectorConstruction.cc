@@ -480,6 +480,12 @@ void ESSDetectorConstruction::ConstructDisk(G4VSolid *solidDisk) {
                     false, 1, checkOverlaps);
 }
 
+void ESSDetectorConstruction::ConstructBeamStop(G4VSolid *solidBeamStop) {
+  beamStopL = new G4LogicalVolume(solidBeamStop, mat_vacuum, "BeamStopL");
+  new G4PVPlacement(0, G4ThreeVector(.0, .0, 905 * mm), beamStopL, "BeamStop", vacuumL,
+                    false, 0, checkOverlaps);
+}
+
 void ESSDetectorConstruction::ConstructIPM(G4VSolid *solidFrame,
                                            G4VSolid *solidPCB_BT,
                                            G4VSolid *solidPCB_HT) {
