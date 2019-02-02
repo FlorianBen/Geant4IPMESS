@@ -57,6 +57,8 @@ endif()
 set(Geant4ESS_inc
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSActionInitialization.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSAnalysis.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSBeamStopHit.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSBeamStopSD.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSCameraHit.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSCameraSD.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSConfigManager.hh
