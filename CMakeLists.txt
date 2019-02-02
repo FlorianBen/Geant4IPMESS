@@ -22,6 +22,7 @@ else()
   include_directories(${CADMESH_INCLUDE_DIRS})
 endif()
 ## YAML-CPP
+## TODO: Implementer la configuration en YAML
 option(WITH_STATIC_YAMLCPP "Build and static link yaml-cpp" OFF)
 if(WITH_STATIC_YAMLCPP)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/yaml-cpp)
@@ -74,6 +75,8 @@ set(Geant4ESS_inc
 
 set(Geant4ESS_src
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSActionInitialization.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSBeamStopHit.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSBeamStopSD.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSCameraHit.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSCameraSD.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ESSConfigManager.cc
