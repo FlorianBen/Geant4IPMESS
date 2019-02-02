@@ -28,6 +28,10 @@ protected:
    */
   G4VSolid *ConstructSolidWorld();
   /**
+   * Construct the Building Tunnel solid.
+   */
+  G4VSolid *ConstructBuildingTunnelSolid();
+  /**
    * Construct LWU solid inner shell.
    */
   G4VSolid *ConstructSolidInnerLWU();
@@ -92,9 +96,21 @@ protected:
    */
   G4VSolid *ConstructSolidLWUFootInter();
   /**
+   * Construct Screen stop.
+   */
+  G4VSolid *ConstructSolidScreenStop();
+  /**
+   * Construct Beam stop.
+   */
+  G4VSolid *ConstructSolidBeamStop();
+  /**
    * Placement of LWU.
    */
   void ConstructLWU(G4VSolid *solidOuter, G4VSolid *solidInner);
+  /**
+   * Placement of Building Tunnel.
+   */
+  void ConstructBuildingTunnel(G4VSolid *solidBuildTunnel);
   /**
    * Placement of Disks.
    */
@@ -127,9 +143,17 @@ protected:
    */
   void ConstructLWUSupport(G4VSolid *solidLWUSupport);
   /**
-   * Placement of Template.
+   * Placement of LWU support feets.
    */
   void ConstructFeets(G4VSolid *solidFoot, G4VSolid *solidFootInter);
+  /**
+   * Placement of Screen Stop.
+   */
+  void ConstructScreenStop(G4VSolid *solidScreenStop);
+  /**
+   * Placement of Beam stop.
+   */
+  void ConstructBeamStop(G4VSolid *solidBeamStop);
   /**
    * Placement of Template.
    */
@@ -138,6 +162,7 @@ protected:
 private:
   G4bool checkOverlaps;
   G4Material *mat_air;
+  G4Material *mat_concrete;
   G4Material *mat_copper;
   G4Material *mat_gold;
   G4Material *mat_macor;
@@ -167,6 +192,7 @@ private:
   G4LogicalVolume *LWU_SupportL;
   G4LogicalVolume *LWU_FootL;
   G4LogicalVolume *LWU_FootInterL;
+  G4LogicalVolume *screenStopL;
   G4LogicalVolume *beamStopL;
 
   G4int nx_pixels;

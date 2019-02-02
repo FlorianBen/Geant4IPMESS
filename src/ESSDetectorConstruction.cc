@@ -1,4 +1,5 @@
 #include "ESSDetectorConstruction.hh"
+#include "ESSBeamStopSD.hh"
 #include "ESSCameraSD.hh"
 #include "ESSMCPSD.hh"
 
@@ -68,6 +69,10 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   auto solidDisk = ConstructSolidDisk();
   ConstructDisk(solidDisk);
 
+  // Beam Stop
+  auto solidBeamStop = ConstructSolidBeamStop();
+  ConstructBeamStop(solidBeamStop);
+
   // IPM
   auto solidFrame = ConstructSolidFrame();
   auto solidPCB_BT = ConstructSolidPCB();
@@ -116,11 +121,16 @@ void ESSDetectorConstruction::ConstructSDandField() {
   auto mcpSD = new ESSMCPSD("MCPSD","MCPCollection",0);
   sdManager->AddNewDetector(mcpSD);
   mcpL->SetSensitiveDetector(mcpSD);
+
+  auto beamStopSD = new ESSBeamStopSD("BeamStopSD","BeamStopCollection",10);
+  sdManager->AddNewDetector(beamStopSD);
+  beamStopL->SetSensitiveDetector(beamStopSD);
 }
 
 void ESSDetectorConstruction::ConstructMaterials() {
   auto nistManager = G4NistManager::Instance();
   mat_air = nistManager->FindOrBuildMaterial("G4_AIR");
+  mat_concrete = nistManager->FindOrBuildMaterial("G4_CONCRETE");
   mat_copper = nistManager->FindOrBuildMaterial("G4_Cu");
   mat_gold = nistManager->FindOrBuildMaterial("G4_Au");
   mat_macor = new G4Material("Macor", 2.52 * g / cm3, 6, kStateSolid);
@@ -226,8 +236,16 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidOuterLWU() {
                                           zplaneOuter, rIOuter, rOuter);
   auto wireScannerOuterBox =
       new G4Box("boxWSOuter", 155. * mm, 80. * mm, 29. * mm);
+  auto wireScannerCapBox =
+      new G4Box("boxWSCap", 155. * mm, 80. * mm, 29. * mm);
   auto cf200OuterTub =
       new G4Tubs("cf200Outer", .0, 105 * mm, 8 * cm, phiS, phiT);
+  auto cf200CapTub =
+    new G4Tubs("cf200Cap", .0, 115 * mm, 2 * cm, phiS, phiT);
+  auto cf100OuterTub =
+      new G4Tubs("cf100Outer", .0, 55 * mm, 8 * cm, phiS, phiT);
+  auto cf100CapTub =
+    new G4Tubs("cf100Cap", .0, 65 * mm, 1.5 * cm, phiS, phiT);
 
   // LWU => Position and rotations
   auto posLWU = G4ThreeVector(.0 * mm, .0 * mm, .0 * mm);
@@ -243,14 +261,32 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidOuterLWU() {
   auto trWS2 = G4Transform3D(rotWS2, posWS2);
   // CF200
   auto posCF200_1 = G4ThreeVector(100. * mm, 0. * mm, 206 * mm);
+  auto posCF200cap_1 = G4ThreeVector(160. * mm, 0. * mm, 206 * mm);
   auto posCF200_2 = G4ThreeVector(0. * mm, 100. * mm, 337 * mm);
+  auto posCF200cap_2 = G4ThreeVector(0. * mm, 160. * mm, 337 * mm);
   auto rotCF200_1 = G4RotationMatrix();
   rotCF200_1.rotateY(90. * deg);
   auto rotCF200_2 = G4RotationMatrix();
   rotCF200_2.rotateX(90. * deg);
-  // rotCF200_2.rotateX(90. * deg);
   auto trCF200_1 = G4Transform3D(rotCF200_1, posCF200_1);
   auto trCF200_2 = G4Transform3D(rotCF200_2, posCF200_2);
+  auto trCF200cap_1 = G4Transform3D(rotCF200_1, posCF200cap_1);
+  auto trCF200cap_2 = G4Transform3D(rotCF200_2, posCF200cap_2);
+
+  // CF100
+  auto posCF100_1 = G4ThreeVector(-100. * mm, 0. * mm, 206 * mm);
+  auto posCF100cap_1 = G4ThreeVector(-165 * mm, 0. * mm, 206 * mm);
+  auto posCF100_2 = G4ThreeVector(0. * mm, -100. * mm, 337 * mm);
+  auto posCF100cap_2 = G4ThreeVector(0. * mm, -165 * mm, 337 * mm);
+  auto rotCF100_1 = G4RotationMatrix();
+  rotCF100_1.rotateY(-90. * deg);
+  auto rotCF100_2 = G4RotationMatrix();
+  rotCF100_2.rotateX(-90. * deg);
+  // rotCF200_2.rotateX(90. * deg);
+  auto trCF100_1 = G4Transform3D(rotCF100_1, posCF100_1);
+  auto trCF100_2 = G4Transform3D(rotCF100_2, posCF100_2);
+  auto trCF100cap_1 = G4Transform3D(rotCF100_1, posCF100cap_1);
+  auto trCF100cap_2 = G4Transform3D(rotCF100_2, posCF100cap_2);
 
   // Union for outer shell
   G4MultiUnion *unionOuter = new G4MultiUnion("OuterUnion");
@@ -258,7 +294,13 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidOuterLWU() {
   unionOuter->AddNode(*wireScannerOuterBox, trWS1);
   unionOuter->AddNode(*wireScannerOuterBox, trWS2);
   unionOuter->AddNode(*cf200OuterTub, trCF200_1);
+  unionOuter->AddNode(*cf200CapTub, trCF200cap_1);
   unionOuter->AddNode(*cf200OuterTub, trCF200_2);
+  unionOuter->AddNode(*cf200CapTub, trCF200cap_2);
+  unionOuter->AddNode(*cf100OuterTub, trCF100_1);
+  unionOuter->AddNode(*cf100CapTub, trCF100cap_1);
+  unionOuter->AddNode(*cf100OuterTub, trCF100_2);
+  unionOuter->AddNode(*cf100CapTub, trCF100cap_2);
   unionOuter->Voxelize();
   return unionOuter;
 }
@@ -325,6 +367,12 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU() {
   unionInner->AddNode(*cf100InnerTub, trCF100_2);
   unionInner->Voxelize();
   return unionInner;
+}
+
+G4VSolid *ESSDetectorConstruction::ConstructSolidBeamStop(){ 
+  G4double phiS = 0. * degree;
+  G4double phiT = 360. * degree;
+  return new G4Tubs("BeamStop", .0, 49 * mm, 2 * cm, phiS, phiT);
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidFrame() {
