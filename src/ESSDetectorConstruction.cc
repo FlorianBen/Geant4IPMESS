@@ -279,6 +279,8 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU() {
       new G4Box("boxSInner", 150. * mm, 75. * mm, 24. * mm);
   auto cf200InnerTub =
       new G4Tubs("cf200Inner", .0, 100 * mm, 6 * cm, phiS, phiT);
+  auto cf100InnerTub =
+      new G4Tubs("cf100Inner", .0, 50 * mm, 6 * cm, phiS, phiT);
 
   // LWU => Position and rotations
   auto posLWU = G4ThreeVector(.0 * mm, .0 * mm, .0 * mm);
@@ -299,9 +301,19 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU() {
   rotCF200_1.rotateY(90. * deg);
   auto rotCF200_2 = G4RotationMatrix();
   rotCF200_2.rotateX(90. * deg);
-  // rotCF200_2.rotateX(90. * deg);
   auto trCF200_1 = G4Transform3D(rotCF200_1, posCF200_1);
   auto trCF200_2 = G4Transform3D(rotCF200_2, posCF200_2);
+
+  // CF100
+  auto posCF100_1 = G4ThreeVector(-100. * mm, 0. * mm, 206 * mm);
+  auto posCF100_2 = G4ThreeVector(0. * mm, -100. * mm, 337 * mm);
+  auto rotCF100_1 = G4RotationMatrix();
+  rotCF100_1.rotateY(90. * deg);
+  auto rotCF100_2 = G4RotationMatrix();
+  rotCF100_2.rotateX(90. * deg);
+  auto trCF100_1 = G4Transform3D(rotCF100_1, posCF100_1);
+  auto trCF100_2 = G4Transform3D(rotCF100_2, posCF100_2);
+
   // Union for inner shell
   G4MultiUnion *unionInner = new G4MultiUnion("InnerUnion");
   unionInner->AddNode(*pipeInnerBeamPoly, trLWU);
@@ -309,6 +321,8 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU() {
   unionInner->AddNode(*wireScannerInnerBox, trWS2);
   unionInner->AddNode(*cf200InnerTub, trCF200_1);
   unionInner->AddNode(*cf200InnerTub, trCF200_2);
+  unionInner->AddNode(*cf100InnerTub, trCF100_1);
+  unionInner->AddNode(*cf100InnerTub, trCF100_2);
   unionInner->Voxelize();
   return unionInner;
 }
