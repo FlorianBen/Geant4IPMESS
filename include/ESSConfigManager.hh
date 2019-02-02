@@ -1,12 +1,18 @@
 #ifndef ESSConfigManager_h
 #define ESSConfigManager_h 1
 
+#include <string>
+
 class ESSConfigManager {
 public:
-  ESSConfigManager(/* args */);
-  ~ESSConfigManager();
+  ESSConfigManager(std::string config_filename);
+  virtual ~ESSConfigManager();
+
+protected:
+  void parseConfig();
+
 private:
-  /* data */
+  std::string config_filename;
 };
 
 #endif

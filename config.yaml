@@ -1,0 +1,18 @@
+# Detector geometrie
+CAD_dir: ./data/
+CAD_construction:
+  build_quad: yes
+  build_quad_support: yes
+  build_lwu_support: yes
+  build_support_feet: yes
+
+vessel_construction:
+  units: "mm"
+  
+
+# Input particles
+input_dir: ./data/
+
+# Output
+output_dir: ./
+output_name: out
