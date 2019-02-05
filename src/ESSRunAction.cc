@@ -33,7 +33,7 @@ ESSRunAction::ESSRunAction() : G4UserRunAction() {
                                   1); //, "x (pixels)", "y (pixels)");
   }
 
-  analysisManager->CreateNtuple("MCP", "MCP hits");
+  analysisManager->CreateNtuple("MCP1", "MCP1 hits");
   analysisManager->CreateNtupleIColumn("ID");      // column id = 0
   analysisManager->CreateNtupleIColumn("PDG");     // column id = 1
   analysisManager->CreateNtupleDColumn("Ekin");    // column id = 2
@@ -51,12 +51,12 @@ ESSRunAction::~ESSRunAction() { delete G4AnalysisManager::Instance(); }
 
 void ESSRunAction::BeginOfRunAction(const G4Run * /*run*/) {
   // Open an output file
-  G4String fileName = "camera";
+  G4String fileName = "out";
 #ifdef G4MPI
   fileName = fileName + "_rank" +
              std::to_string(G4MPImanager::GetManager()->GetRank());
 #endif
-  fileName = fileName + "_hist";
+  fileName = fileName + "data";
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
   analysisManager->OpenFile(fileName);
 }
