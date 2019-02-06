@@ -56,7 +56,6 @@ void ESSRunAction::BeginOfRunAction(const G4Run * /*run*/) {
   fileName = fileName + "_rank" +
              std::to_string(G4MPImanager::GetManager()->GetRank());
 #endif
-  fileName = fileName + "data";
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
   analysisManager->OpenFile(fileName);
 }

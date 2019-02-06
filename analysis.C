@@ -1,7 +1,8 @@
-void camera(){
+void analysis(){
   auto canv = new TCanvas("canv1", "Camera", 1920, 1280);
   canv->Divide(2,1);
-  TFile *f = new TFile("camera_hist.root", "read");
+  TFile *f = new TFile("out_merged.root", "read");
+  f->ls();
   TTree *t1 = (TTree *)f->Get("Camera0");
   TTree *t2 = (TTree *)f->Get("Camera1");
   canv->cd(1);
