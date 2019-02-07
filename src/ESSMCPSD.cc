@@ -6,6 +6,7 @@
 #include <G4SDManager.hh>
 #include <G4Step.hh>
 #include <G4SystemOfUnits.hh>
+#include <G4VProcess.hh>
 #include <G4VTouchable.hh>
 #include <G4ios.hh>
 
@@ -60,11 +61,20 @@ G4bool ESSMCPSD::ProcessHits(G4Step *step, G4TouchableHistory *) {
  
   // Position & momentum
   auto position = preStepPoint->GetPosition();
-  auto momentu = preStepPoint->GetMomentum();
+  auto momentum = preStepPoint->GetMomentum();
   newHit->SetPosition(position);
  
   // Add hit in the collection
   fHitsCollection->insert(newHit);
+
+  G4String process_name;
+
+  auto process = preStepPoint->GetProcessDefinedStep();
+  if(process == nullptr) {
+    process_name = "primary";
+  } else {
+    process_name = process->GetProcessName();
+  }
 
   // Add hits properties in the ntuple
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
@@ -75,8 +85,11 @@ G4bool ESSMCPSD::ProcessHits(G4Step *step, G4TouchableHistory *) {
   analysisManager->FillNtupleDColumn(fidTuple, 4, position.y());
   analysisManager->FillNtupleDColumn(fidTuple, 5, position.z());
   analysisManager->FillNtupleDColumn(fidTuple, 6, time);
+  analysisManager->FillNtupleDColumn(fidTuple, 7, momentum.getX());
+  analysisManager->FillNtupleDColumn(fidTuple, 8, momentum.getY());
+  analysisManager->FillNtupleDColumn(fidTuple, 9, momentum.getZ());
+  analysisManager->FillNtupleSColumn(fidTuple, 10, "primary");
   analysisManager->AddNtupleRow(fidTuple);  
-  //auto hit = (*fHitsCollection)[pixelNumber];
 
   return true;
 }

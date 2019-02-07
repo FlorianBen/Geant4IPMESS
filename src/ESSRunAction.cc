@@ -33,8 +33,22 @@ ESSRunAction::ESSRunAction() : G4UserRunAction() {
                                   1); //, "x (pixels)", "y (pixels)");
   }
 
-  analysisManager->CreateNtuple("MCP1", "MCP1 hits");
-  analysisManager->CreateNtupleIColumn("ID");      // column id = 0
+  analysisManager->CreateNtuple("MCP", "MCP hits");
+  analysisManager->CreateNtupleIColumn("MCP ID");      // column id = 0
+  analysisManager->CreateNtupleIColumn("PDG code");     // column id = 1
+  analysisManager->CreateNtupleDColumn("Energy deposit");    // column id = 2
+  analysisManager->CreateNtupleDColumn("Xpos");    // column id = 3 
+  analysisManager->CreateNtupleDColumn("Ypos");    // column id = 4
+  analysisManager->CreateNtupleDColumn("Zpos");    // column id = 5
+  analysisManager->CreateNtupleDColumn("Xmom");    // column id = 6
+  analysisManager->CreateNtupleDColumn("Ymom");    // column id = 7
+  analysisManager->CreateNtupleDColumn("Zmom");    // column id = 8
+  analysisManager->CreateNtupleDColumn("time");    // column id = 9
+  analysisManager->CreateNtupleSColumn("Process"); // column id = 10
+  analysisManager->FinishNtuple();
+
+  analysisManager->CreateNtuple("Screen", "Screen hits");
+  analysisManager->CreateNtupleIColumn("Screen ID");      // column id = 0
   analysisManager->CreateNtupleIColumn("PDG");     // column id = 1
   analysisManager->CreateNtupleDColumn("Ekin");    // column id = 2
   analysisManager->CreateNtupleDColumn("Xpos");    // column id = 3 
@@ -55,6 +69,8 @@ void ESSRunAction::BeginOfRunAction(const G4Run * /*run*/) {
 #ifdef G4MPI
   fileName = fileName + "_rank" +
              std::to_string(G4MPImanager::GetManager()->GetRank());
+#else
+  fileName = fileName + "_merged";
 #endif
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
   analysisManager->OpenFile(fileName);
