@@ -113,16 +113,16 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
 
 void ESSDetectorConstruction::ConstructSDandField() {
   auto sdManager = G4SDManager::GetSDMpointer();
-  
+
   auto cameraSD = new ESSCameraSD("CamSD", "CameraCollection");
   sdManager->AddNewDetector(cameraSD);
   pixelCellsL->SetSensitiveDetector(cameraSD);
 
-  auto mcpSD = new ESSMCPSD("MCPSD","MCPCollection",0);
+  auto mcpSD = new ESSMCPSD("MCPSD", "MCPCollection", 0);
   sdManager->AddNewDetector(mcpSD);
   mcpL->SetSensitiveDetector(mcpSD);
 
-  auto beamStopSD = new ESSBeamStopSD("BeamStopSD","BeamStopCollection",10);
+  auto beamStopSD = new ESSBeamStopSD("BeamStopSD", "BeamStopCollection", 10);
   sdManager->AddNewDetector(beamStopSD);
   beamStopL->SetSensitiveDetector(beamStopSD);
 }
@@ -236,16 +236,13 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidOuterLWU() {
                                           zplaneOuter, rIOuter, rOuter);
   auto wireScannerOuterBox =
       new G4Box("boxWSOuter", 155. * mm, 80. * mm, 29. * mm);
-  auto wireScannerCapBox =
-      new G4Box("boxWSCap", 155. * mm, 80. * mm, 29. * mm);
+  auto wireScannerCapBox = new G4Box("boxWSCap", 155. * mm, 80. * mm, 29. * mm);
   auto cf200OuterTub =
       new G4Tubs("cf200Outer", .0, 105 * mm, 8 * cm, phiS, phiT);
-  auto cf200CapTub =
-    new G4Tubs("cf200Cap", .0, 115 * mm, 2 * cm, phiS, phiT);
+  auto cf200CapTub = new G4Tubs("cf200Cap", .0, 115 * mm, 2 * cm, phiS, phiT);
   auto cf100OuterTub =
       new G4Tubs("cf100Outer", .0, 55 * mm, 8 * cm, phiS, phiT);
-  auto cf100CapTub =
-    new G4Tubs("cf100Cap", .0, 65 * mm, 1.5 * cm, phiS, phiT);
+  auto cf100CapTub = new G4Tubs("cf100Cap", .0, 65 * mm, 1.5 * cm, phiS, phiT);
 
   // LWU => Position and rotations
   auto posLWU = G4ThreeVector(.0 * mm, .0 * mm, .0 * mm);
@@ -369,10 +366,10 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU() {
   return unionInner;
 }
 
-G4VSolid *ESSDetectorConstruction::ConstructSolidBeamStop(){ 
+G4VSolid *ESSDetectorConstruction::ConstructSolidBeamStop() {
   G4double phiS = 0. * degree;
   G4double phiT = 360. * degree;
-  return new G4Tubs("BeamStop", .0, 49 * mm, 2 * cm, phiS, phiT);
+  return new G4Tubs("BeamStop", .0, 30 * mm, 2 * cm, phiS, phiT);
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidFrame() {
@@ -505,20 +502,22 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidLWUSupport() {
   return unionSolid;
 }
 
-G4VSolid* ESSDetectorConstruction::ConstructSolidLWUFoot() {
-  auto solidFoot = CADMesh::TessellatedMesh::FromSTL("LWU_E_type1/LWU_foot.stl");
+G4VSolid *ESSDetectorConstruction::ConstructSolidLWUFoot() {
+  auto solidFoot =
+      CADMesh::TessellatedMesh::FromSTL("LWU_E_type1/LWU_foot.stl");
   solidFoot->SetScale(mm);
   solidFoot->SetReverse(false);
   solidFoot->SetOffset(G4ThreeVector(0 * mm, .0 * mm, 0.0 * mm));
-  return solidFoot->GetSolid();  
+  return solidFoot->GetSolid();
 }
 
-G4VSolid* ESSDetectorConstruction::ConstructSolidLWUFootInter() {
-  auto solidFootInter = CADMesh::TessellatedMesh::FromSTL("LWU_E_type1/LWU_foot_inter.stl");
+G4VSolid *ESSDetectorConstruction::ConstructSolidLWUFootInter() {
+  auto solidFootInter =
+      CADMesh::TessellatedMesh::FromSTL("LWU_E_type1/LWU_foot_inter.stl");
   solidFootInter->SetScale(mm);
   solidFootInter->SetReverse(false);
   solidFootInter->SetOffset(G4ThreeVector(0 * mm, .0 * mm, 0.0 * mm));
-  return solidFootInter->GetSolid();  
+  return solidFootInter->GetSolid();
 }
 
 void ESSDetectorConstruction::ConstructLWU(G4VSolid *solidOuter,
@@ -543,9 +542,10 @@ void ESSDetectorConstruction::ConstructDisk(G4VSolid *solidDisk) {
 }
 
 void ESSDetectorConstruction::ConstructBeamStop(G4VSolid *solidBeamStop) {
+  // TODO: Beam stop overlap dans le quad pq ?
   beamStopL = new G4LogicalVolume(solidBeamStop, mat_vacuum, "BeamStopL");
-  new G4PVPlacement(0, G4ThreeVector(.0, .0, 905 * mm), beamStopL, "BeamStop", vacuumL,
-                    false, 0, checkOverlaps);
+  new G4PVPlacement(0, G4ThreeVector(.0, .0, 500 * mm), beamStopL, "BeamStop",
+                    vacuumL, false, 0, checkOverlaps);
 }
 
 void ESSDetectorConstruction::ConstructIPM(G4VSolid *solidFrame,
@@ -725,21 +725,25 @@ void ESSDetectorConstruction::ConstructLWUSupport(G4VSolid *solidSupportLWU) {
                     LWU_SupportL, "Support", worldL, false, 0, checkOverlaps);
 }
 
-void ESSDetectorConstruction::ConstructFeets(G4VSolid *solidFoot, G4VSolid *solidFootInter) {
+void ESSDetectorConstruction::ConstructFeets(G4VSolid *solidFoot,
+                                             G4VSolid *solidFootInter) {
   auto rotFoot = new G4RotationMatrix();
   rotFoot->rotateX(90 * deg);
   auto rotFootInner = new G4RotationMatrix();
   rotFootInner->rotateZ(90 * deg);
 
   LWU_FootL = new G4LogicalVolume(solidFoot, mat_steel, "LWU_FootL");
-  LWU_FootInterL = new G4LogicalVolume(solidFootInter, mat_steel, "LWU_FootInterL");
+  LWU_FootInterL =
+      new G4LogicalVolume(solidFootInter, mat_steel, "LWU_FootInterL");
 
-  new G4PVPlacement(new G4RotationMatrix(*rotFoot), G4ThreeVector(0. * mm, -1475 * mm, -135. * mm),
-                    LWU_FootL, "Foot1", worldL, false, 0, checkOverlaps);
+  new G4PVPlacement(new G4RotationMatrix(*rotFoot),
+                    G4ThreeVector(0. * mm, -1475 * mm, -135. * mm), LWU_FootL,
+                    "Foot1", worldL, false, 0, checkOverlaps);
   rotFoot->rotateZ(180 * deg);
 
   new G4PVPlacement(rotFoot, G4ThreeVector(0. * mm, -1475 * mm, 875. * mm),
                     LWU_FootL, "Foot2", worldL, false, 1, checkOverlaps);
   new G4PVPlacement(rotFootInner, G4ThreeVector(0. * mm, -1150. * mm, 42. * mm),
-                    LWU_FootInterL, "FootInter", worldL, false, 1, checkOverlaps);  
+                    LWU_FootInterL, "FootInter", worldL, false, 1,
+                    checkOverlaps);
 }
