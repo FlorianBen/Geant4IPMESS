@@ -17,7 +17,7 @@ The program can use the G4mpi interface and should be MPI ready.
 - CADMesh >= version 2 (beta)
 - FreeCAD >= 0.16 (optional: for STEP to STL convertion)
 - ROOT >= 6 (optional: for data processing)
-- MPI (optional: for parallel computing on a cluster)
+- MPI (optional: for parallel computing on clusters)
 
 ## Build
 
