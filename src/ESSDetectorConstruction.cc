@@ -369,7 +369,8 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU() {
 G4VSolid *ESSDetectorConstruction::ConstructSolidBeamStop() {
   G4double phiS = 0. * degree;
   G4double phiT = 360. * degree;
-  return new G4Tubs("BeamStop", .0, 30 * mm, 2 * cm, phiS, phiT);
+  
+  return new G4Tubs("BeamStop", .0, 49 * mm, 2 * cm, phiS, phiT);
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidFrame() {
@@ -391,14 +392,9 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidPCB() {
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidMCP() {
-
   G4double phiS = 0. * degree;
   G4double phiT = 360. * degree;
   return new G4Tubs("MCP", 0.0 * mm, 23.0 * mm, 0.5 * mm, phiS, phiT);
-  /*   auto meshMCP = CADMesh::TessellatedMesh::FromSTL("MCP/MCP_glass.stl");
-  meshMCP->SetScale(mm);
-  meshMCP->SetReverse(false);
-  return meshMCP->GetSolid(); */
 }
 
 G4VSolid *ESSDetectorConstruction::ConstructSolidPhos() {
@@ -479,26 +475,6 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidLWUSupport() {
   unionSolid->AddNode(*solidT, transT1);
   unionSolid->AddNode(*solidT, transT2);
   unionSolid->Voxelize();
-  /*
-  auto offsetsupport1 = G4ThreeVector(720 * mm, -215 * mm, 510 * mm);
-  auto rotSupport = new G4RotationMatrix();
-  CADMesh *meshSupport1 =
-      new CADMesh("LWU_E_type1/outPart__Feature_289-10233-01_AF10000.stl", mm,
-                  offsetsupport1, false);
-  G4VSolid *cadsolidSupport = meshSupport1->TessellatedMesh();
-  auto SupportL = new G4LogicalVolume(cadsolidSupport, steelPipe, "SupportL");
-  rotSupport->rotateX(-90 * deg);
-  rotSupport->rotateZ(-90 * deg);
-
-  new G4PVPlacement(rotSupport,
-                    G4ThreeVector(210. * mm, -513. * mm, -456. * mm), SupportL,
-                    "Support1", worldLV, false, 0, checkOverlaps);
-  new G4PVPlacement(rotSupport,
-                    G4ThreeVector(-210. * mm, -513. * mm, -456. * mm), SupportL,
-                    "Support1", worldLV, false, 1, checkOverlaps);
-
-  // always return the physical World
-  */
   return unionSolid;
 }
 
