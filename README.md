@@ -46,3 +46,8 @@ In MPI enable mode, only the batch interactive mode is available.
 ```sh
 mpiexec --hostfile MPIhost -x ENV_VAR Geant4ESS
 ```
+
+If slurm is avaible, the simulation can be put in queue.
+```sh
+srun -n X Geant4ESS
+```
