@@ -57,7 +57,9 @@ int main(int argc, char *argv[]) {
   runManager->SetUserInitialization(new ESSDetectorConstruction());
 
   // Physics list
-  G4VModularPhysicsList *physicsList = new FTFP_BERT;
+  auto physicListFactory = new G4PhysListFactory();
+  //G4VModularPhysicsList *physicsList = new FTFP_BERT;
+  auto physicsList = physicListFactory->GetReferencePhysList("FTFP_BERT_LIV");
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(physicsList);
 

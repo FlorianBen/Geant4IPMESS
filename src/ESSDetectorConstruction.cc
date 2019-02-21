@@ -13,7 +13,9 @@
 #include <G4PVPlacement.hh>
 #include <G4PVReplica.hh>
 #include <G4Polycone.hh>
+#include <G4ProductionCuts.hh>
 #include <G4SDManager.hh>
+#include <G4Region.hh>
 #include <G4SubtractionSolid.hh>
 #include <G4SystemOfUnits.hh>
 #include <G4Transform3D.hh>
@@ -113,6 +115,13 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
 
 void ESSDetectorConstruction::ConstructSDandField() {
   auto sdManager = G4SDManager::GetSDMpointer();
+
+  auto myRegion = new G4Region("VacuumRegion");
+  myRegion->AddRootLogicalVolume(vacuumL);
+
+  G4ProductionCuts* cuts = new G4ProductionCuts();
+  cuts->SetProductionCut(0.01*nm);
+  myRegion->SetProductionCuts(cuts);
 
   auto cameraSD = new ESSCameraSD("CamSD", "CameraCollection");
   sdManager->AddNewDetector(cameraSD);
