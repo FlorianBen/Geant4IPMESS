@@ -129,7 +129,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/analysis.C
 if(WITH_MPI_SUPPORT)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/merger.sh
   ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/MPIhost 
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/MPIhost 
   ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 endif()
 add_custom_command(TARGET Geant4ESS POST_BUILD

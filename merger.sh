@@ -3,12 +3,12 @@
 set -B # For brace expansion
 
 if [ $# -lt 2 ]; then
-    echo "Usage: $0 <base filename> <number of file>"
+    echo "Usage: $0 <base filename> <max rank number>"
     exit 1
 fi
 
 if [  "$1" -lt 2  ]; then
-    echo "Usage: $0 <base filename> <number of file>"
+    echo "Usage: $0 <base filename> <max rank number>"
     exit 1
 fi
 
