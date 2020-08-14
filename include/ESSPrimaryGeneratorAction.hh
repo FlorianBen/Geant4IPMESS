@@ -8,18 +8,21 @@
 class G4Event;
 
 class ESSPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
-public:
+ public:
   ESSPrimaryGeneratorAction();
   virtual ~ESSPrimaryGeneratorAction();
 
   // method from the base class
-  virtual void GeneratePrimaries(G4Event *);
+  virtual void GeneratePrimaries(G4Event*);
 
-private:
-  G4GenericMessenger *fMessenger;
-  G4ParticleGun *fParticleGun;
+ private:
+  G4GenericMessenger* fMessenger;
+  G4ParticleGun* fParticleGun;
   G4bool fRandom;
   G4double frandEnegy;
+  G4double fXEnegy;
+  G4double fYEnegy;
+  G4double fZEnegy;
 };
 
 #endif

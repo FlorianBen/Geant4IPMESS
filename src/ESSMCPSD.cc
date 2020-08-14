@@ -33,8 +33,7 @@ void ESSMCPSD::Initialize(G4HCofThisEvent *hce) {
 }
 
 G4bool ESSMCPSD::ProcessHits(G4Step *step, G4TouchableHistory *) {
-  // TODO: Implementer l'enregistrement des information pour le premier hit (qqsoit l'energie ?)
-  // TODO: exporter la position, direction, le type, l'energie de la particule.
+
   G4double edep = step->GetTotalEnergyDeposit();
   if (edep == 0.)
     return false;
@@ -47,6 +46,8 @@ G4bool ESSMCPSD::ProcessHits(G4Step *step, G4TouchableHistory *) {
   // Layer number
   // = copy number of mother volume
   G4StepPoint* preStepPoint = step->GetPreStepPoint();
+  G4StepPoint* postStepPoint = step->GetPostStepPoint();
+
   const G4Track* track = step->GetTrack();
   G4int pdgCode = track->GetDefinition()->GetPDGEncoding();
 
@@ -76,6 +77,7 @@ G4bool ESSMCPSD::ProcessHits(G4Step *step, G4TouchableHistory *) {
     process_name = process->GetProcessName();
   }
 
+
   // Add hits properties in the ntuple
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
   analysisManager->FillNtupleIColumn(fidTuple, 0, copyNo);
@@ -88,7 +90,7 @@ G4bool ESSMCPSD::ProcessHits(G4Step *step, G4TouchableHistory *) {
   analysisManager->FillNtupleDColumn(fidTuple, 7, momentum.getX());
   analysisManager->FillNtupleDColumn(fidTuple, 8, momentum.getY());
   analysisManager->FillNtupleDColumn(fidTuple, 9, momentum.getZ());
-  analysisManager->FillNtupleSColumn(fidTuple, 10, "primary");
+  analysisManager->FillNtupleSColumn(fidTuple, 10, process_name);
   analysisManager->AddNtupleRow(fidTuple);  
 
   return true;

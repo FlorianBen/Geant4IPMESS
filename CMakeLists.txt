@@ -13,14 +13,9 @@ else()
   find_package(Geant4 REQUIRED)
 endif()
 include(${Geant4_USE_FILE})
-## CADMesh
-option(WITH_STATIC_CADMESH "Build and static link CADMesh" OFF)
-if(WITH_STATIC_CADMESH)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/CADMesh)
-else()
-  find_package(cadmesh)
-  include_directories(${CADMESH_INCLUDE_DIRS})
-endif()
+
+find_package(assimp)
+
 ## YAML-CPP
 ## TODO: Implementer la configuration en YAML
 option(WITH_STATIC_YAMLCPP "Build and static link yaml-cpp" OFF)
@@ -56,6 +51,7 @@ endif()
 
 # Define source files
 set(Geant4ESS_inc
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/CADMesh.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSActionInitialization.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSAnalysis.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ESSBeamStopHit.hh
@@ -98,11 +94,7 @@ else()
   target_link_libraries(Geant4ESS ${Geant4_LIBRARIES})
 endif()
 
-if(WITH_STATIC_CADMESH)
-  target_link_libraries(Geant4ESS cadmesh)
-else()
-  target_link_libraries(Geant4ESS ${cadmesh_LIBRARIES})
-endif()
+target_link_libraries(Geant4ESS assimp)
 
 if(WITH_STATIC_YAMLCPP)
   target_link_libraries(Geant4ESS yaml-cpp)

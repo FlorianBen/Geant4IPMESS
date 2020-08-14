@@ -14,15 +14,17 @@
 #include <G4PVReplica.hh>
 #include <G4Polycone.hh>
 #include <G4ProductionCuts.hh>
-#include <G4SDManager.hh>
 #include <G4Region.hh>
+#include <G4SDManager.hh>
 #include <G4SubtractionSolid.hh>
 #include <G4SystemOfUnits.hh>
 #include <G4Transform3D.hh>
 #include <G4Trd.hh>
 #include <G4Tubs.hh>
 
-#include <CADMesh.hh>
+#define USE_CADMESH_ASSIMP_READER
+#define CADMESH_DEFAULT_READER ASSIMP
+#include "CADMesh.hh"
 
 ESSDetectorConstruction::ESSDetectorConstruction()
     : G4VUserDetectorConstruction() {
@@ -76,10 +78,10 @@ G4VPhysicalVolume *ESSDetectorConstruction::Construct() {
   ConstructBeamStop(solidBeamStop);
 
   // IPM
-  auto solidFrame = ConstructSolidFrame();
-  auto solidPCB_BT = ConstructSolidPCB();
-  auto solidPCB_HT = new G4Box("PCB", 1. * mm, 49. * mm, 49. * mm);
-  ConstructIPM(solidFrame, solidPCB_BT, solidPCB_HT);
+  // auto solidFrame = ConstructSolidFrame();
+  // auto solidPCB_BT = ConstructSolidPCB();
+  // auto solidPCB_HT = new G4Box("PCB", 1. * mm, 49. * mm, 49. * mm);
+  // ConstructIPM(solidFrame, solidPCB_BT, solidPCB_HT);
 
   // MCP
   auto solidMCP = ConstructSolidMCP();
@@ -119,8 +121,8 @@ void ESSDetectorConstruction::ConstructSDandField() {
   auto myRegion = new G4Region("VacuumRegion");
   myRegion->AddRootLogicalVolume(vacuumL);
 
-  G4ProductionCuts* cuts = new G4ProductionCuts();
-  cuts->SetProductionCut(0.01*nm);
+  G4ProductionCuts *cuts = new G4ProductionCuts();
+  cuts->SetProductionCut(0.01 * nm);
   myRegion->SetProductionCuts(cuts);
 
   auto cameraSD = new ESSCameraSD("CamSD", "CameraCollection");
@@ -378,7 +380,7 @@ G4VSolid *ESSDetectorConstruction::ConstructSolidInnerLWU() {
 G4VSolid *ESSDetectorConstruction::ConstructSolidBeamStop() {
   G4double phiS = 0. * degree;
   G4double phiT = 360. * degree;
-  
+
   return new G4Tubs("BeamStop", .0, 49 * mm, 2 * cm, phiS, phiT);
 }
 
